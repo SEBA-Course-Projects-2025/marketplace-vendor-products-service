@@ -1,4 +1,4 @@
-module vendor-mock-api-gateway
+module customer-mock-api-gateway
 
 go 1.24.1
 

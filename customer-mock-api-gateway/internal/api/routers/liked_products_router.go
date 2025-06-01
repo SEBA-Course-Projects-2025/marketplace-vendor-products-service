@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"customer-mock-api-gateway/customer-mock-api-gateway/internal/api/handlers"
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/customer-mock-api-gateway/internal/api/handlers"
 )
 
 func SetUpLikedProductsRouter(rg *gin.RouterGroup) {

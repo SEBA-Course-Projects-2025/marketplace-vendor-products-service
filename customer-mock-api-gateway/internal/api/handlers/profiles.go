@@ -1,24 +1,23 @@
 package handlers
 
 import (
+	"customer-mock-api-gateway/customer-mock-api-gateway/internal/models"
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/models"
 	"net/http"
 )
 
 func GetProfileHandler(c *gin.Context) {
 
-	id := c.Param("vendorId")
+	id := c.Param("customerId")
 
 	profile := models.Profile{
-		Id:          "mockVendorId",
-		Name:        "mock-vendor",
-		Email:       "vendor@example.com",
-		Description: "mock description information about the vendor",
-		Logo:        "https://example.com/vendorLogo.png",
-		Address:     "123 Vendor St, Vendor City",
-		Website:     "https://mock-vendor.com",
-		CatalogId:   "de305d54-75b4-431b-adb2-eb6b9e546014",
+		Id:              "mockCustomerId",
+		Email:           "mockCustomer@example.com",
+		ShippingAddress: "789 Maple Drive, Toronto, ON M4B 1B3, Canada",
+		Orders: []string{
+			"mockOrder1",
+			"mockOrder2",
+		},
 	}
 
 	if profile.Id == id {
@@ -34,7 +33,7 @@ func GetProfileHandler(c *gin.Context) {
 
 func PutProfileHandler(c *gin.Context) {
 
-	id := c.Param("vendorId")
+	id := c.Param("customerId")
 
 	var profile models.Profile
 
@@ -43,7 +42,7 @@ func PutProfileHandler(c *gin.Context) {
 		return
 	}
 
-	if id != "mockVendorId" {
+	if id != "mockCustomerId" {
 		c.JSON(http.StatusNotFound, gin.H{})
 		return
 	}

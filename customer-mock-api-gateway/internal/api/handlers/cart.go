@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"customer-mock-api-gateway/customer-mock-api-gateway/internal/models"
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/customer-mock-api-gateway/internal/models"
 	"net/http"
 )
 

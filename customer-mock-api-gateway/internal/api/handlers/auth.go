@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"customer-mock-api-gateway/customer-mock-api-gateway/internal/models"
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/models"
 	"net/http"
 )
 
@@ -16,8 +16,8 @@ func PostRegistrationHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"token":    "mock-jwt-token",
-		"vendorId": "mock-vendor-id",
+		"token":      "mock-jwt-token",
+		"customerId": "mock-customer-id",
 	})
 
 }
@@ -32,14 +32,14 @@ func PostLoginHandler(c *gin.Context) {
 	}
 
 	validLogin := models.Login{
-		Email:    "mockVendor@example.com",
+		Email:    "mockCustomer@example.com",
 		Password: "password123",
 	}
 
 	if login.Email == validLogin.Email && login.Password == validLogin.Password {
 		c.JSON(http.StatusOK, gin.H{
-			"tokenSession":    "mock-jwt-token",
-			"vendorSessionId": "mock-vendor-session-id",
+			"tokenSession":      "mock-jwt-token",
+			"customerSessionId": "mock-customer-session-id",
 		})
 		return
 	}

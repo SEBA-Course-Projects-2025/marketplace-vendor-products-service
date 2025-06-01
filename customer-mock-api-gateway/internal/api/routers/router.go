@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"customer-mock-api-gateway/customer-mock-api-gateway/internal/api/middlewares"
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/api/middlewares"
 )
 
 func SetUpRouter() *gin.Engine {
@@ -17,10 +17,8 @@ func SetUpRouter() *gin.Engine {
 		rootGroup.Use(middlewares.AuthenticationMiddleware())
 
 		SetUpProfileRouter(rootGroup)
-		SetUpProductsRouter(rootGroup)
-		SetUpProductsStockRouter(rootGroup)
-		SetUpReviewsRouter(rootGroup)
-		SetUpOrdersRouter(rootGroup)
+		SetUpCartRouter(rootGroup)
+		SetUpLikedProductsRouter(rootGroup)
 
 	}
 
