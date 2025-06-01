@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/api/routers"
+	"vendor-mock-api-gateway/vendor-mock-api-gateway/internal/api/routers"
 )
 
 func main() {

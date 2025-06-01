@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/models"
 	"net/http"
 	"time"
+	"vendor-mock-api-gateway/vendor-mock-api-gateway/internal/models"
 )
 
 func GetOneReviewHandler(c *gin.Context) {

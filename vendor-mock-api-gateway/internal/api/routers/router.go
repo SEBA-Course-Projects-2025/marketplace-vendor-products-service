@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/api/middlewares"
+	"vendor-mock-api-gateway/vendor-mock-api-gateway/internal/api/middlewares"
 )
 
 func SetUpRouter() *gin.Engine {

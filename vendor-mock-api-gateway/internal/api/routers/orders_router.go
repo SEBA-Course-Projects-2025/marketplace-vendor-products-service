@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/api/handlers"
+	"vendor-mock-api-gateway/vendor-mock-api-gateway/internal/api/handlers"
 )
 
 func SetUpOrdersRouter(rg *gin.RouterGroup) {

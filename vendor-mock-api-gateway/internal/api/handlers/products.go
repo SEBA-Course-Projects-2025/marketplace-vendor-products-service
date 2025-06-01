@@ -3,8 +3,8 @@ package handlers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"mock-api-gateway/mock-api-gateways/vendor-mock-api-gateway/internal/models"
 	"net/http"
+	"vendor-mock-api-gateway/vendor-mock-api-gateway/internal/models"
 )
 
 func GetOneProductHandler(c *gin.Context) {
