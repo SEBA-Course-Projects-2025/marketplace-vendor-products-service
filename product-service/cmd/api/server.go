@@ -1,12 +1,12 @@
 package main
 
 import (
-	productRepository "dev-vendor/product-service/internal/products/infrastucture/repository"
+	productRepository "dev-vendor/product-service/internal/products/infrastructure/repository"
 	productHandlers "dev-vendor/product-service/internal/products/interfaces/handlers"
 	"dev-vendor/product-service/internal/shared/db"
 	mainHandler "dev-vendor/product-service/internal/shared/handler"
 	"dev-vendor/product-service/internal/shared/router"
-	stockRepository "dev-vendor/product-service/internal/stocks/infrastucture/repository"
+	stockRepository "dev-vendor/product-service/internal/stocks/infrastructure/repository"
 	stockHandlers "dev-vendor/product-service/internal/stocks/interfaces/handlers"
 	"fmt"
 	"log"
