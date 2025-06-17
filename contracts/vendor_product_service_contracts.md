@@ -4,7 +4,7 @@
 
 ## 1. Get All Products Information
 
-__GET ```/products```__
+__GET ```api/products```__
 
 __Response:__
 
@@ -16,7 +16,11 @@ __Response:__
     "name": "string",
     "price": "float64",
     "category": "string",
-    "image": "string",
+    "image": {
+      "id": "uuid",
+      "image_url": "string",
+      "product_id": "uuid"
+    },
     "quantity": "int"
   }
 ]
@@ -30,7 +34,7 @@ __Status codes:__
 
 ## 2. Get One Product Information
 
-__GET ```/products/:productId```__
+__GET ```api/products/:productId```__
 
 __Response:__
 
@@ -42,8 +46,19 @@ __Response:__
   "description": "string",
   "price": "float64",
   "category": "string",
-  "images": ["string"],
-  "tags": ["string"],
+  "images": [
+    {
+      "id": "uuid",
+      "image_url": "string",
+      "product_id": "uuid"
+    }
+  ],
+  "tags": [
+    {
+      "id": "uuid",
+      "tag_name": "string"
+    }
+  ],
   "quantity": "int"
 }
 ```
@@ -58,7 +73,7 @@ __Status codes:__
 
 ## 3. Add New Product
 
-__POST ```/products```__
+__POST ```api/products```__
 
 __Body:__
 
@@ -83,8 +98,19 @@ __Response:__
   "description": "string",
   "price": "float64",
   "category": "string",
-  "images": ["string"],
-  "tags": ["string"],
+  "images": [
+    {
+      "id": "uuid",
+      "image_url": "string",
+      "product_id": "uuid"
+    }
+  ],
+  "tags": [
+    {
+      "id": "uuid",
+      "tag_name": "string"
+    }
+  ],
   "quantity": "int"
 }
 ```
@@ -99,7 +125,7 @@ __Status codes:__
 
 ## 4. Update Product Information
 
-__PUT ```/products/:productId```__
+__PUT ```api/products/:productId```__
 
 __Body:__
 
@@ -109,8 +135,19 @@ __Body:__
   "description": "string",
   "price": "float64",
   "category": "string",
-  "images": ["string"],
-  "tags": ["string"]
+  "images": [
+    {
+      "id": "uuid",
+      "image_url": "string",
+      "product_id": "uuid"
+    }
+  ],
+  "tags": [
+    {
+      "id": "uuid",
+      "tag_name": "string"
+    }
+  ]
 }
 ```
 
@@ -124,7 +161,7 @@ __Status codes:__
 
 ## 5. Modify Product Information
 
-__PATCH ```/products/:productId```__
+__PATCH ```api/products/:productId```__
 
 __Body:__
 
@@ -134,8 +171,19 @@ __Body:__
   "description": "string", (optional)
   "price": "float64", (optional)
   "category": "string", (optional)
-  "images": ["string"], (optional)
-  "tags": ["string"], (optional)
+  "images": [
+    {
+      "id": "uuid",
+      "image_url": "string",
+      "product_id": "uuid"
+    }
+  ], (optional)
+  "tags": [
+    {
+      "id": "uuid",
+      "tag_name": "string"
+    }
+  ] (optional)
 }
 ```
 
@@ -151,8 +199,19 @@ __Response:__
   "description": "string",
   "price": "float64",
   "category": "string",
-  "images": ["string"],
-  "tags": ["string"],
+  "images": [
+    {
+      "id": "uuid",
+      "image_url": "string",
+      "product_id": "uuid"
+    }
+  ],
+  "tags": [
+    {
+      "id": "uuid",
+      "tag_name": "string"
+    }
+  ],
   "quantity": "int"
 }
 ```
@@ -168,7 +227,7 @@ __Status codes:__
 
 ## 6. Delete Product
 
-__DELETE ```/products/:productId```__
+__DELETE ```api/products/:productId```__
 
 __Status codes:__
 - ```200 OK (success)```
@@ -180,7 +239,7 @@ __Status codes:__
 
 ## 7. Delete Multiple Products
 
-__DELETE ```/products```__
+__DELETE ```api/products```__
 
 __Body:__
 
@@ -200,7 +259,7 @@ __Status codes:__
 
 ## 8. Get All Stocks Information
 
-__GET ```/stocks```__
+__GET ```api/stocks```__
 
 __Response:__
 
@@ -222,7 +281,7 @@ __Status codes:__
 
 ## 9. Get One Stock Information
 
-__GET ```/stocks/:stockId```__
+__GET ```api/stocks/:stockId```__
 
 __Response:__
 
@@ -258,7 +317,7 @@ __Status codes:__
 
 ## 10.  Add A New Stock 
 
-__POST ```/stocks```__
+__POST ```api/stocks```__
 
 __Body:__
 
@@ -295,7 +354,7 @@ __Status codes:__
 
 ## 11. Update Stock Information 
 
-__PUT ```/stocks/:stockId```__
+__PUT ```api/stocks/:stockId```__
 
 __Body:__
 
@@ -317,7 +376,7 @@ __Status codes:__
 
 ## 12. Update Product Information From Stock
 
-__PUT ```/stocks/:stockId/products/:productId```__
+__PUT ```api/stocks/:stockId/products/:productId```__
 
 __Body:__
 
@@ -338,7 +397,7 @@ __Status codes:__
 
 ## 13. Modify Stock Information 
 
-__PATCH ```/stocks/:stockId```__
+__PATCH ```api/stocks/:stockId```__
 
 __Body:__
 
@@ -382,7 +441,7 @@ __Status codes:__
 
 ## 14. Modify Products Information From Stock
 
-__PATCH ```/stocks/:stockId/products/```__
+__PATCH ```api/stocks/:stockId/products/```__
 
 __Body:__
 
@@ -419,7 +478,7 @@ __Status codes:__
 
 ## 15. Modify Product Information From Stock
 
-__PATCH ```/stocks/:stockId/products/:productId```__
+__PATCH ```api/stocks/:stockId/products/:productId```__
 
 __Body:__
 
@@ -453,7 +512,7 @@ __Status codes:__
 
 # 16. Delete Stock 
 
-__DELETE ```/stocks/:stockId```__
+__DELETE ```api/stocks/:stockId```__
 
 __Status codes:__
 - ```200 OK (success)```
@@ -465,7 +524,7 @@ __Status codes:__
 
 ## 17. Delete Supplies From The Stock
 
-__DELETE ```/stocks```__
+__DELETE ```api/stocks```__
 
 __Body:__
 
@@ -485,7 +544,7 @@ __Status codes:__
 
 # 18. Delete Product From Supply From The Stock
 
-__DELETE ```/stocks/:stockId/products/:productId```__
+__DELETE ```api/stocks/:stockId/products/:productId```__
 
 __Status codes:__
 - ```200 OK (success)```
@@ -497,7 +556,7 @@ __Status codes:__
 
 ## 19. Delete Products From Supply From The Stock
 
-__DELETE ```/stocks/:stockId/products```__
+__DELETE ```api/stocks/:stockId/products```__
 
 __Body:__
 
