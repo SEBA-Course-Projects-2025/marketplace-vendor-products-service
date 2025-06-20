@@ -14,6 +14,12 @@ import (
 	"time"
 )
 
+// @title Product Service API
+// @version 1.0
+// @description API documentation for the Product Service.
+// @host localhost:8080
+// @BasePath /api/
+
 func main() {
 
 	dbUsed, err := db.ConnectDb()
@@ -21,21 +27,21 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	productRepo := &productRepository.GormProductRepository{Db: dbUsed}
-	stockRepo := &stockRepository.GormStockRepository{Db: dbUsed}
+	productRepo := productRepository.New(dbUsed)
+	stockRepo := stockRepository.New(dbUsed)
+
+	sharedHandler := &mainHandler.Handler{
+		ProductRepo: productRepo,
+		StockRepo:   stockRepo,
+		Db:          dbUsed,
+	}
 
 	productHandler := &productHandlers.ProductHandler{
-		Handler: &mainHandler.Handler{
-			ProductRepo: productRepo,
-			StockRepo:   stockRepo,
-		},
+		Handler: sharedHandler,
 	}
 
 	stockHandler := &stockHandlers.StockHandler{
-		Handler: &mainHandler.Handler{
-			StockRepo:   stockRepo,
-			ProductRepo: productRepo,
-		},
+		Handler: sharedHandler,
 	}
 
 	mainRouter := router.SetUpRouter(productHandler, stockHandler)
