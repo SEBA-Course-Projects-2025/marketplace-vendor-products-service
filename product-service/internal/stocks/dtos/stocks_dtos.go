@@ -196,7 +196,7 @@ func StocksProductToStockProductInfo(updatedStockProduct *models.StocksProduct) 
 	return StockProductInfo{
 		Id:       updatedStockProduct.ProductId,
 		Name:     updatedStockProduct.Product.Name,
-		Quantity: updatedStockProduct.Product.Quantity,
+		Quantity: updatedStockProduct.Quantity,
 		UnitCost: updatedStockProduct.UnitCost,
 		Image:    updatedStockProduct.Product.Images[0],
 	}
