@@ -14,12 +14,6 @@ import (
 	"time"
 )
 
-// @title Product Service API
-// @version 1.0
-// @description API documentation for the Product Service.
-// @host localhost:8080
-// @BasePath /api/
-
 func main() {
 
 	dbUsed, err := db.ConnectDb()
