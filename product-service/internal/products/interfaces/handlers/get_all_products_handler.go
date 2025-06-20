@@ -14,17 +14,33 @@ func (h *ProductHandler) GetAllProductsHandler(c *gin.Context) {
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid vendorId"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vendorId"})
 		return
 	}
 
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page"})
+		return
+	}
 
-	size, _ := strconv.Atoi(c.DefaultQuery("size", "15"))
+	size, err := strconv.Atoi(c.DefaultQuery("size", "15"))
+	if err != nil || size < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		return
+	}
 
-	offset, _ := strconv.Atoi(c.Query("offset"))
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "-1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
+		return
+	}
 
-	limit, _ := strconv.Atoi(c.Query("limit"))
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "-1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
 
 	if offset < 0 || limit <= 0 {
 		offset = (page - 1) * size
@@ -33,9 +49,22 @@ func (h *ProductHandler) GetAllProductsHandler(c *gin.Context) {
 
 	category := c.Query("category")
 
-	minPrice, _ := strconv.ParseFloat(c.DefaultQuery("minPrice", "0"), 64)
+	minPrice, err := strconv.ParseFloat(c.DefaultQuery("minPrice", "0"), 64)
+	if err != nil || minPrice < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid minimum price"})
+		return
+	}
 
-	maxPrice, _ := strconv.ParseFloat(c.DefaultQuery("maxPrice", "0"), 64)
+	maxPrice, err := strconv.ParseFloat(c.DefaultQuery("maxPrice", "0"), 64)
+	if err != nil || maxPrice < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid maximum price"})
+		return
+	}
+
+	if minPrice > maxPrice && maxPrice > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid prices range"})
+		return
+	}
 
 	search := c.Query("search")
 
