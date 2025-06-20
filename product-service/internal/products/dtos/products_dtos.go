@@ -8,7 +8,7 @@ import (
 
 type OneProductResponse struct {
 	Id          uuid.UUID              `json:"id"`
-	VendorId    uuid.UUID              `json:"vendorId"`
+	VendorId    uuid.UUID              `json:"vendor_id"`
 	Name        string                 `json:"name"`
 	Description string                 `json:"description"`
 	Price       float64                `json:"price"`
@@ -34,7 +34,7 @@ func ProductToDto(product models.Product) OneProductResponse {
 
 type GetProductsResponse struct {
 	Id       uuid.UUID            `json:"id"`
-	VendorId uuid.UUID            `json:"vendorId"`
+	VendorId uuid.UUID            `json:"vendor_id"`
 	Name     string               `json:"name"`
 	Price    float64              `json:"price"`
 	Category string               `json:"category"`
@@ -47,13 +47,22 @@ func ProductsToDto(products []models.Product) []GetProductsResponse {
 	var productsResponse []GetProductsResponse
 
 	for _, product := range products {
+
+		var image models.ProductsImage
+
+		if len(product.Images) > 0 {
+			image = product.Images[0]
+		} else {
+			image = models.ProductsImage{}
+		}
+
 		productResponse := GetProductsResponse{
 			Id:       product.Id,
 			VendorId: product.VendorId,
 			Name:     product.Name,
 			Price:    product.Price,
 			Category: product.Category,
-			Image:    product.Images[0],
+			Image:    image,
 			Quantity: product.Quantity,
 		}
 		productsResponse = append(productsResponse, productResponse)
