@@ -5,6 +5,7 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type StockRepository interface {
@@ -22,4 +23,7 @@ type StockRepository interface {
 	DeleteManyStockProducts(ctx context.Context, ids []uuid.UUID, stockId uuid.UUID, vendorId uuid.UUID) error
 	CheckProduct(ctx context.Context, productId uuid.UUID, vendorId uuid.UUID) error
 	CheckLocation(ctx context.Context, locationId uuid.UUID) (*models.StocksLocation, error)
+	FindProductStocksQuantities(ctx context.Context, productId uuid.UUID, vendorId uuid.UUID) ([]models.StocksProduct, error)
+	Transaction(fn func(txRepo StockRepository) error) error
+	WithTx(tx *gorm.DB) StockRepository
 }
