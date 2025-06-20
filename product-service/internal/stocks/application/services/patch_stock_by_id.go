@@ -10,27 +10,43 @@ import (
 
 func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stockReq dtos.StockPatchRequest, stockId uuid.UUID, vendorId uuid.UUID) (dtos.OneStockResponse, error) {
 
-	var location *models.StocksLocation
+	var stockResponse dtos.OneStockResponse
 
-	if stockReq.LocationId != nil && *stockReq.LocationId != uuid.Nil {
-		var err error
-		location, err = stockRepo.CheckLocation(ctx, *stockReq.LocationId)
+	err := stockRepo.Transaction(func(txRepo domain.StockRepository) error {
+		var location *models.StocksLocation
+
+		if stockReq.LocationId != nil && *stockReq.LocationId != uuid.Nil {
+			var err error
+			location, err = txRepo.CheckLocation(ctx, *stockReq.LocationId)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		existingStock, err := txRepo.FindById(ctx, stockId, vendorId)
 
 		if err != nil {
-			return dtos.OneStockResponse{}, err
+			return err
 		}
-	}
 
-	existingStock, err := stockRepo.FindById(ctx, stockId, vendorId)
+		existingStock = dtos.ModifyStockWithDto(existingStock, stockReq, location)
+
+		updatedStock, err := txRepo.PatchStockId(ctx, existingStock)
+		if err != nil {
+			return err
+		}
+
+		stockResponse = dtos.StockToDto(updatedStock)
+
+		return nil
+
+	})
 
 	if err != nil {
 		return dtos.OneStockResponse{}, err
 	}
 
-	existingStock = dtos.ModifyStockWithDto(existingStock, stockReq, location)
-
-	updatedStock, err := stockRepo.PatchStockId(ctx, existingStock)
-
-	return dtos.StockToDto(updatedStock), nil
+	return stockResponse, nil
 
 }

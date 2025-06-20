@@ -8,33 +8,47 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func PutStockProduct(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, stockProductReq dtos.PutStockProductRequest, stockId uuid.UUID, productId uuid.UUID, vendorId uuid.UUID) error {
+func PutStockProduct(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, db *gorm.DB, stockProductReq dtos.PutStockProductRequest, stockId uuid.UUID, productId uuid.UUID, vendorId uuid.UUID) error {
 
-	if err := stockRepo.CheckProduct(ctx, productId, vendorId); err != nil {
-		return err
-	}
+	return db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
-	if err := services.UpdateProductQuantity(ctx, productRepo, productId, vendorId, stockProductReq.Quantity); err != nil {
-		return err
-	}
+		txStockRepo := stockRepo.WithTx(tx)
+		txProductRepo := productRepo.WithTx(tx)
 
-	existingStock, err := stockRepo.FindById(ctx, stockId, vendorId)
-	if err != nil {
-		return err
-	}
-
-	var existingStockProduct *models.StocksProduct
-	for i := range existingStock.StocksProducts {
-		if existingStock.StocksProducts[i].ProductId == productId {
-			existingStockProduct = &existingStock.StocksProducts[i]
-			break
+		if err := txStockRepo.CheckProduct(ctx, productId, vendorId); err != nil {
+			return err
 		}
-	}
 
-	updatedStockProduct := dtos.UpdateStockProductWithDto(existingStockProduct, stockProductReq)
+		existingStock, err := txStockRepo.FindById(ctx, stockId, vendorId)
+		if err != nil {
+			return err
+		}
 
-	return stockRepo.UpdateStockProduct(ctx, updatedStockProduct)
+		var existingStockProduct *models.StocksProduct
+		for i := range existingStock.StocksProducts {
+			if existingStock.StocksProducts[i].ProductId == productId {
+				existingStockProduct = &existingStock.StocksProducts[i]
+				break
+			}
+		}
+
+		updatedStockProduct := dtos.UpdateStockProductWithDto(existingStockProduct, stockProductReq)
+
+		quantitySum, err := GetQuantitySum(ctx, txStockRepo, productId, vendorId)
+
+		if err != nil {
+			return err
+		}
+
+		if err := services.UpdateProductQuantity(ctx, txProductRepo, productId, vendorId, quantitySum); err != nil {
+			return err
+		}
+
+		return txStockRepo.UpdateStockProduct(ctx, updatedStockProduct)
+
+	})
 
 }

@@ -8,6 +8,8 @@ import (
 
 func DeleteManyStocks(ctx context.Context, stockRepo domain.StockRepository, ids []uuid.UUID, vendorId uuid.UUID) error {
 
-	return stockRepo.DeleteManyStocks(ctx, ids, vendorId)
+	return stockRepo.Transaction(func(txRepo domain.StockRepository) error {
+		return txRepo.DeleteManyStocks(ctx, ids, vendorId)
+	})
 
 }

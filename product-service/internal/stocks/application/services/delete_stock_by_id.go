@@ -8,6 +8,8 @@ import (
 
 func DeleteStockById(ctx context.Context, stockRepo domain.StockRepository, id uuid.UUID, vendorId uuid.UUID) error {
 
-	return stockRepo.DeleteStockById(ctx, id, vendorId)
+	return stockRepo.Transaction(func(txRepo domain.StockRepository) error {
+		return txRepo.DeleteStockById(ctx, id, vendorId)
+	})
 
 }

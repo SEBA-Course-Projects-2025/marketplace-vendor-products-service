@@ -8,48 +8,71 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, stockProductReq []dtos.PatchStockManyProductsRequest, stockId uuid.UUID, vendorId uuid.UUID) ([]dtos.StockProductInfo, error) {
-
-	existingStock, err := stockRepo.FindById(ctx, stockId, vendorId)
-	if err != nil {
-		return nil, err
-	}
-
-	var modifiedProducts []models.StocksProduct
+func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, db *gorm.DB, stockProductReq []dtos.PatchStockManyProductsRequest, stockId uuid.UUID, vendorId uuid.UUID) ([]dtos.StockProductInfo, error) {
 
 	var stockProductsRes []dtos.StockProductInfo
 
-	for _, product := range stockProductReq {
+	err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
-		if err := stockRepo.CheckProduct(ctx, product.ProductId, vendorId); err != nil {
-			return nil, err
+		txStockRepo := stockRepo.WithTx(tx)
+		txProductRepo := productRepo.WithTx(tx)
+
+		existingStock, err := txStockRepo.FindById(ctx, stockId, vendorId)
+		if err != nil {
+			return err
 		}
 
-		if product.Quantity != nil && *product.Quantity >= 0 {
-			if err := services.UpdateProductQuantity(ctx, productRepo, product.ProductId, vendorId, *product.Quantity); err != nil {
-				return nil, err
+		var modifiedProducts []models.StocksProduct
+
+		for _, product := range stockProductReq {
+
+			if err := txStockRepo.CheckProduct(ctx, product.ProductId, vendorId); err != nil {
+				return err
+			}
+
+			for i := range existingStock.StocksProducts {
+				if existingStock.StocksProducts[i].ProductId == product.ProductId {
+					updatedStockProduct := dtos.ModifyStockManyProductsWithDto(&existingStock.StocksProducts[i], product)
+					modifiedProducts = append(modifiedProducts, *updatedStockProduct)
+					break
+				}
+			}
+
+		}
+
+		updatedProducts, err := txStockRepo.PatchStockProducts(ctx, modifiedProducts)
+		if err != nil {
+			return err
+		}
+
+		for _, updProduct := range updatedProducts {
+			stockProductsRes = append(stockProductsRes, dtos.StocksProductToStockProductInfo(&updProduct))
+		}
+
+		for _, product := range stockProductReq {
+
+			quantitySum, err := GetQuantitySum(ctx, txStockRepo, product.ProductId, vendorId)
+
+			if err != nil {
+				return err
+			}
+
+			if product.Quantity != nil && *product.Quantity >= 0 {
+				if err := services.UpdateProductQuantity(ctx, txProductRepo, product.ProductId, vendorId, quantitySum); err != nil {
+					return err
+				}
 			}
 		}
 
-		for i := range existingStock.StocksProducts {
-			if existingStock.StocksProducts[i].ProductId == product.ProductId {
-				updatedStockProduct := dtos.ModifyStockManyProductsWithDto(&existingStock.StocksProducts[i], product)
-				modifiedProducts = append(modifiedProducts, *updatedStockProduct)
-				break
-			}
-		}
+		return nil
 
-	}
+	})
 
-	updatedProducts, err := stockRepo.PatchStockProducts(ctx, modifiedProducts)
 	if err != nil {
 		return nil, err
-	}
-
-	for _, updProduct := range updatedProducts {
-		stockProductsRes = append(stockProductsRes, dtos.StocksProductToStockProductInfo(&updProduct))
 	}
 
 	return stockProductsRes, nil

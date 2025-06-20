@@ -9,20 +9,22 @@ import (
 
 func PutStock(ctx context.Context, stockRepo domain.StockRepository, stockReq dtos.PutStockRequest, stockId uuid.UUID, vendorId uuid.UUID) error {
 
-	location, err := stockRepo.CheckLocation(ctx, stockReq.LocationId)
+	return stockRepo.Transaction(func(txRepo domain.StockRepository) error {
+		location, err := txRepo.CheckLocation(ctx, stockReq.LocationId)
 
-	if err != nil {
-		return err
-	}
+		if err != nil {
+			return err
+		}
 
-	existingStock, err := stockRepo.FindById(ctx, stockId, vendorId)
+		existingStock, err := txRepo.FindById(ctx, stockId, vendorId)
 
-	if err != nil {
-		return err
-	}
+		if err != nil {
+			return err
+		}
 
-	existingStock = dtos.UpdateStockWithDto(existingStock, stockReq, location)
+		existingStock = dtos.UpdateStockWithDto(existingStock, stockReq, location)
 
-	return stockRepo.UpdateStock(ctx, existingStock)
+		return txRepo.UpdateStock(ctx, existingStock)
+	})
 
 }
