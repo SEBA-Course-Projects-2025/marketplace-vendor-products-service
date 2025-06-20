@@ -2,22 +2,28 @@ package repository
 
 import (
 	"context"
+	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/domain/models"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"log"
 )
 
 type GormProductRepository struct {
-	Db *gorm.DB
+	db *gorm.DB
+}
+
+func New(db *gorm.DB) *GormProductRepository {
+	return &GormProductRepository{db: db}
 }
 
 func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*models.Product, error) {
 
 	var product models.Product
 
-	if err := gpr.Db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ? AND vendor_id = ?", id, vendorId).Error; err != nil {
+	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ? AND vendor_id = ?", id, vendorId).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error getting product data")
 	}
 
@@ -29,7 +35,7 @@ func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.Produ
 
 	var products []models.Product
 
-	db := gpr.Db.WithContext(ctx)
+	db := gpr.db.WithContext(ctx)
 
 	db = db.Where("vendor_id = ?", vendorId)
 
@@ -83,7 +89,7 @@ func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *models
 
 	newProduct.VendorId = vendorId
 
-	if err := gpr.Db.WithContext(ctx).Create(newProduct).Error; err != nil {
+	if err := gpr.db.WithContext(ctx).Create(newProduct).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error creating product")
 	}
 
@@ -93,8 +99,14 @@ func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *models
 
 func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *models.Product) error {
 
-	if err := gpr.Db.WithContext(ctx).Save(updatedProduct).Error; err != nil {
-		return utils.ErrorHandler(err, "Error updating product")
+	res := gpr.db.WithContext(ctx).Save(updatedProduct)
+
+	if res.Error != nil {
+		return utils.ErrorHandler(res.Error, "Error updating product")
+	}
+
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil
@@ -103,8 +115,14 @@ func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *mo
 
 func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *models.Product) (*models.Product, error) {
 
-	if err := gpr.Db.WithContext(ctx).Save(modifiedProduct).Error; err != nil {
-		return nil, utils.ErrorHandler(err, "Error updating product")
+	res := gpr.db.WithContext(ctx).Save(modifiedProduct)
+
+	if res.Error != nil {
+		return nil, utils.ErrorHandler(res.Error, "Error updating product")
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
 	}
 
 	return modifiedProduct, nil
@@ -113,7 +131,7 @@ func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *mo
 
 func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) error {
 
-	res := gpr.Db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&models.Product{})
+	res := gpr.db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&models.Product{})
 	if res.Error != nil {
 		return utils.ErrorHandler(res.Error, "Error deleting product")
 	}
@@ -127,20 +145,47 @@ func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, 
 
 func (gpr *GormProductRepository) DeleteMany(ctx context.Context, ids []uuid.UUID, vendorId uuid.UUID) error {
 
-	return gpr.Db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	res := gpr.db.WithContext(ctx).Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&models.Product{})
 
-		res := tx.Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&models.Product{})
+	if res.Error != nil {
+		return utils.ErrorHandler(res.Error, "Error deleting product")
+	}
 
-		if res.Error != nil {
-			return utils.ErrorHandler(res.Error, "Error deleting product")
-		}
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
 
-		if res.RowsAffected == 0 {
-			return gorm.ErrRecordNotFound
-		}
+	return nil
 
-		return nil
+}
 
-	})
+func (gpr *GormProductRepository) WithTx(tx *gorm.DB) domain.ProductRepository {
+	return &GormProductRepository{
+		db: tx,
+	}
+}
+
+func (gpr *GormProductRepository) Transaction(fn func(txRepo domain.ProductRepository) error) error {
+
+	tx := gpr.db.Begin()
+	if tx.Error != nil {
+		log.Printf("Transaction begin error: %v", tx.Error)
+		return tx.Error
+	}
+
+	repo := gpr.WithTx(tx)
+
+	if err := fn(repo); err != nil {
+		log.Printf("Transaction function error: %v", err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		log.Printf("Transaction commit error: %v", err)
+		return err
+	}
+
+	return nil
 
 }
