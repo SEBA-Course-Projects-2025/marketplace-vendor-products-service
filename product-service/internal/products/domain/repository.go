@@ -5,6 +5,7 @@ import (
 	"dev-vendor/product-service/internal/products/domain/models"
 	"dev-vendor/product-service/internal/products/dtos"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ProductRepository interface {
@@ -15,4 +16,6 @@ type ProductRepository interface {
 	Patch(ctx context.Context, modifiedProduct *models.Product) (*models.Product, error)
 	DeleteById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) error
 	DeleteMany(ctx context.Context, ids []uuid.UUID, vendorId uuid.UUID) error
+	Transaction(fn func(txRepo ProductRepository) error) error
+	WithTx(tx *gorm.DB) ProductRepository
 }
