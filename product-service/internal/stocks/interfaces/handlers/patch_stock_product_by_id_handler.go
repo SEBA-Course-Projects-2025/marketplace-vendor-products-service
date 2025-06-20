@@ -15,7 +15,7 @@ func (h *StockHandler) PatchStockProductByIdHandler(c *gin.Context) {
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid vendorId"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vendorId"})
 		return
 	}
 
@@ -43,7 +43,7 @@ func (h *StockHandler) PatchStockProductByIdHandler(c *gin.Context) {
 		return
 	}
 
-	stock, err := services.PatchStockProductById(c.Request.Context(), h.StockRepo, h.ProductRepo, stockProductReq, stockId, productId, vendorId)
+	stock, err := services.PatchStockProductById(c.Request.Context(), h.StockRepo, h.ProductRepo, h.Db, stockProductReq, stockId, productId, vendorId)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

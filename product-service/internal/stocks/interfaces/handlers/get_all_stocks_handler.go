@@ -14,17 +14,33 @@ func (h *StockHandler) GetAllStocksHandler(c *gin.Context) {
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid vendorId"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vendorId"})
 		return
 	}
 
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page"})
+		return
+	}
 
-	size, _ := strconv.Atoi(c.DefaultQuery("size", "15"))
+	size, err := strconv.Atoi(c.DefaultQuery("size", "15"))
+	if err != nil || size < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		return
+	}
 
-	offset, _ := strconv.Atoi(c.Query("offset"))
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "-1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
+		return
+	}
 
-	limit, _ := strconv.Atoi(c.Query("limit"))
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "-1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
 
 	if offset < 0 || limit <= 0 {
 		offset = (page - 1) * size
@@ -33,7 +49,7 @@ func (h *StockHandler) GetAllStocksHandler(c *gin.Context) {
 
 	locationId := c.Query("location_id")
 
-	sortBy := c.DefaultQuery("sortBy", "name")
+	sortBy := c.DefaultQuery("sortBy", "date_supplied")
 	sortOrder := c.DefaultQuery("sortOrder", "asc")
 
 	queryParams := dtos.StockQueryParams{

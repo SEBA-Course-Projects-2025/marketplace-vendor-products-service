@@ -13,7 +13,7 @@ func (h *StockHandler) PostStockHandler(c *gin.Context) {
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid vendorId"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vendorId"})
 		return
 	}
 
@@ -24,7 +24,7 @@ func (h *StockHandler) PostStockHandler(c *gin.Context) {
 		return
 	}
 
-	newStock, err := services.PostStock(c.Request.Context(), h.StockRepo, h.ProductRepo, stockReq, vendorId)
+	newStock, err := services.PostStock(c.Request.Context(), h.StockRepo, h.ProductRepo, h.Db, stockReq, vendorId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
