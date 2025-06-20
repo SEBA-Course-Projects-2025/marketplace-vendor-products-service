@@ -1,4 +1,4 @@
-# Vendor Products Service API Contracts 
+# Vendor Products Service API Contracts
 
 ---
 
@@ -6,13 +6,28 @@
 
 __GET ```api/products```__
 
+__Query parameters:__
+
+| Parameter | Type    | Description                                                      |
+|-----------|---------|------------------------------------------------------------------|
+| category  | string  | Filter products by category                                      |
+| minPrice  | float64 | Filter products by price greater than or equal to this value     |
+| maxPrice  | float64 | Filter products by price less than or equal to this value        |
+| search    | string  | Search products by name                                          |
+| sortBy    | string  | Sort products by fields: price, name, quantity                   |
+| sortOrder | string  | Sort order: asc/desc                                             |
+| limit     | int     | Max amount of products to return                                 |
+| offset    | int     | Number of products to skip before starting collecting the result |
+| page      | int     | Page number to retrieve                                          |
+| size      | int     | Number of products to return per page                            |
+
 __Response:__
 
 ```json
 [
   {
     "id": "uuid",
-    "vendorId": "string",
+    "vendor_id": "string",
     "name": "string",
     "price": "float64",
     "category": "string",
@@ -27,6 +42,7 @@ __Response:__
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```500 Internal Server Error```
 
@@ -41,7 +57,7 @@ __Response:__
 ```json
 {
   "id": "uuid",
-  "vendorId": "string",
+  "vendor_id": "string",
   "name": "string",
   "description": "string",
   "price": "float64",
@@ -64,6 +80,7 @@ __Response:__
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid productId)```
 - ```404 Not Found (product not found)```
@@ -83,8 +100,12 @@ __Body:__
   "description": "string",
   "price": "float64",
   "category": "string",
-  "images": ["string"],
-  "tags": ["string"]
+  "images": [
+    "string"
+  ],
+  "tags": [
+    "string"
+  ]
 }
 ```
 
@@ -93,7 +114,7 @@ __Response:__
 ```json
 {
   "id": "uuid",
-  "vendorId": "string",
+  "vendor_id": "string",
   "name": "string",
   "description": "string",
   "price": "float64",
@@ -116,12 +137,12 @@ __Response:__
 ```
 
 __Status codes:__
+
 - ```201 Created (success)```
 - ```400 Bad Request (invalid product data)```
 - ```500 Internal Server Error```
 
 ---
-
 
 ## 4. Update Product Information
 
@@ -152,6 +173,7 @@ __Body:__
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid productId/product data)```
 - ```404 Not Found (product not found)```
@@ -167,23 +189,29 @@ __Body:__
 
 ```json
 {
-  "name": "string", (optional)
-  "description": "string", (optional)
-  "price": "float64", (optional)
-  "category": "string", (optional)
+  "name": "string",
+  (optional)
+  "description": "string",
+  (optional)
+  "price": "float64",
+  (optional)
+  "category": "string",
+  (optional)
   "images": [
     {
       "id": "uuid",
       "image_url": "string",
       "product_id": "uuid"
     }
-  ], (optional)
+  ],
+  (optional)
   "tags": [
     {
       "id": "uuid",
       "tag_name": "string"
     }
-  ] (optional)
+  ]
+  (optional)
 }
 ```
 
@@ -194,7 +222,7 @@ __Response:__
 ```json
 {
   "id": "uuid",
-  "vendorId": "string",
+  "vendor_id": "string",
   "name": "string",
   "description": "string",
   "price": "float64",
@@ -217,6 +245,7 @@ __Response:__
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid productId/product data)```
 - ```404 Not Found (product not found)```
@@ -224,12 +253,12 @@ __Status codes:__
 
 ---
 
-
 ## 6. Delete Product
 
 __DELETE ```api/products/:productId```__
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid productId)```
 - ```404 Not Found (product not found)```
@@ -245,11 +274,14 @@ __Body:__
 
 ```json
 {
-  "idsToDelete": ["uuid"]
+  "ids": [
+    "uuid"
+  ]
 }
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid product ids)```
 - ```404 Not Found (product not found)```
@@ -261,19 +293,32 @@ __Status codes:__
 
 __GET ```api/stocks```__
 
+__Query parameters:__
+
+| Parameter   | Type   | Description                                                    |
+|-------------|--------|----------------------------------------------------------------|
+| sortBy      | string | Sort stocks by date_supplied field                             |
+| sortOrder   | string | Sort order: asc/desc                                           |
+| limit       | int    | Max amount of stocks to return                                 |
+| offset      | int    | Number of stocks to skip before starting collecting the result |
+| page        | int    | Page number to retrieve                                        |
+| size        | int    | Number of stocks to return per page                            |
+| location_id | string | Filter stocks by location_id                                   |
+
 __Response:__
 
 ```json
 [
   {
     "id": "uuid",
-    "dateSupplied": "date",
-    "locationId": "uuid"
+    "date_supplied": "date",
+    "location_id": "uuid"
   }
 ]
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```500 Internal Server Error```
 
@@ -288,8 +333,8 @@ __Response:__
 ```json
 {
   "id": "uuid",
-  "vendorId": "uuid",
-  "dateSupplied": "date",
+  "vendor_id": "uuid",
+  "date_supplied": "date",
   "location": {
     "id": "uuid",
     "city": "string",
@@ -297,10 +342,10 @@ __Response:__
   },
   "products": [
     {
-      "productId": "uuid",
+      "product_id": "uuid",
       "name": "string",
       "quantity": "int",
-      "unitCost": "float64",
+      "unit_cost": "float64",
       "image": "string"
     }
   ]
@@ -308,6 +353,7 @@ __Response:__
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock not found)```
@@ -315,7 +361,7 @@ __Status codes:__
 
 ---
 
-## 10.  Add A New Stock 
+## 10. Add A New Stock
 
 __POST ```api/stocks```__
 
@@ -323,13 +369,13 @@ __Body:__
 
 ```json
 {
-  "dateSupplied": "date",
-  "locationId": "uuid",
+  "date_supplied": "date",
+  "location_id": "uuid",
   "products": [
     {
-      "productId": "uuid",
+      "product_id": "uuid",
       "quantity": "int",
-      "unitCost": "float64"
+      "unit_cost": "float64"
     }
   ]
 }
@@ -340,19 +386,20 @@ __Response:__
 ```json
 {
   "id": "uuid",
-  "dateSupplied": "date",
-  "locationId": "uuid"
+  "date_supplied": "date",
+  "location_id": "uuid"
 }
 ```
 
 __Status codes:__
+
 - ```201 Created (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```500 Internal Server Error```
 
 ---
 
-## 11. Update Stock Information 
+## 11. Update Stock Information
 
 __PUT ```api/stocks/:stockId```__
 
@@ -360,17 +407,17 @@ __Body:__
 
 ```json
 {
-  "dateSupplied": "date",
-  "locationId": "uuid"
+  "date_supplied": "date",
+  "location_id": "uuid"
 }
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock not found)```
 - ```500 Internal Server Error```
-
 
 ---
 
@@ -383,11 +430,12 @@ __Body:__
 ```json
 {
   "quantity": "int",
-  "unitCost": "float64"
+  "unit_cost": "float64"
 }
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId/productId)```
 - ```404 Not Found (stock not found)```
@@ -395,7 +443,7 @@ __Status codes:__
 
 ---
 
-## 13. Modify Stock Information 
+## 13. Modify Stock Information
 
 __PATCH ```api/stocks/:stockId```__
 
@@ -403,8 +451,10 @@ __Body:__
 
 ```json
 {
-  "dateSupplied": "date", (optional)
-  "locationId": "uuid" (optional)
+  "date_supplied": "date",
+  (optional)
+  "location_id": "uuid"
+  (optional)
 }
 ```
 
@@ -413,7 +463,7 @@ __Response:__
 ```json
 {
   "id": "uuid",
-  "dateSupplied": "date",
+  "date_supplied": "date",
   "location": {
     "id": "uuid",
     "city": "string",
@@ -421,10 +471,10 @@ __Response:__
   },
   "products": [
     {
-      "productId": "uuid",
+      "product_id": "uuid",
       "name": "string",
       "quantity": "int",
-      "unitCost": "float64",
+      "unit_cost": "float64",
       "image": "string"
     }
   ]
@@ -432,6 +482,7 @@ __Response:__
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock not found)```
@@ -448,27 +499,31 @@ __Body:__
 ```json
 [
   {
-    "productId": "uuid",
-    "quantity": "int", (optional)
-    "unitCost": "float64" (optional)
+    "product_id": "uuid",
+    "quantity": "int",
+    (optional)
+    "unit_cost": "float64"
+    (optional)
   }
 ]
 ```
+
 __Response:__
 
 ```json
 [
   {
-    "productId": "uuid",
+    "product_id": "uuid",
     "name": "string",
     "quantity": "int",
-    "unitCost": "float64",
+    "unit_cost": "float64",
     "image": "string"
   }
 ]
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock not found)```
@@ -485,24 +540,28 @@ __Body:__
 ```json
 
 {
-  "quantity": "int", (optional)
-  "unitCost": "float64" (optional)
+  "quantity": "int",
+  (optional)
+  "unit_cost": "float64"
+  (optional)
 }
 
 ```
+
 __Response:__
 
 ```json
 {
-  "productId": "uuid",
+  "product_id": "uuid",
   "name": "string",
   "quantity": "int",
-  "unitCost": "float64",
+  "unit_cost": "float64",
   "image": "string"
 }
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId/productId/request data)```
 - ```404 Not Found (stock not found)```
@@ -510,11 +569,12 @@ __Status codes:__
 
 ---
 
-# 16. Delete Stock 
+# 16. Delete Stock
 
 __DELETE ```api/stocks/:stockId```__
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock not found)```
@@ -530,11 +590,14 @@ __Body:__
 
 ```json
 {
-  "idsToDelete": ["uuid"]
+  "ids": [
+    "uuid"
+  ]
 }
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock not found)```
@@ -547,6 +610,7 @@ __Status codes:__
 __DELETE ```api/stocks/:stockId/products/:productId```__
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId/productId)```
 - ```404 Not Found (stock product not found)```
@@ -562,11 +626,14 @@ __Body:__
 
 ```json
 {
-  "idsToDelete": ["uuid"]
+  "ids": [
+    "uuid"
+  ]
 }
 ```
 
 __Status codes:__
+
 - ```200 OK (success)```
 - ```400 Bad Request (invalid stockId)```
 - ```404 Not Found (stock products not found)```
