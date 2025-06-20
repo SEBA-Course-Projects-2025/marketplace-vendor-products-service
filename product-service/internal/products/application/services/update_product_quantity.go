@@ -14,8 +14,11 @@ func UpdateProductQuantity(ctx context.Context, repo domain.ProductRepository, p
 		return err
 	}
 
-	product.Quantity += quantity - product.Quantity
+	product.Quantity = quantity
 
-	return repo.Update(ctx, product)
+	if err := repo.Update(ctx, product); err != nil {
+		return err
+	}
+	return nil
 
 }

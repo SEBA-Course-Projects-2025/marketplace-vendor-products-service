@@ -9,15 +9,26 @@ import (
 
 func PostProduct(ctx context.Context, repo domain.ProductRepository, productReq dtos.ProductRequest, vendorId uuid.UUID) (dtos.OneProductResponse, error) {
 
-	newProduct := dtos.PostDtoToProduct(productReq, vendorId)
+	var productResponse dtos.OneProductResponse
 
-	product, err := repo.Create(ctx, &newProduct, vendorId)
+	err := repo.Transaction(func(txRepo domain.ProductRepository) error {
+
+		newProduct := dtos.PostDtoToProduct(productReq, vendorId)
+
+		product, err := txRepo.Create(ctx, &newProduct, vendorId)
+
+		if err != nil {
+			return err
+		}
+
+		productResponse = dtos.ProductToDto(*product)
+
+		return nil
+	})
 
 	if err != nil {
-		return dtos.OneProductResponse{}, err
+		return dtos.OneProductResponse{}, nil
 	}
-
-	productResponse := dtos.ProductToDto(*product)
 
 	return productResponse, nil
 

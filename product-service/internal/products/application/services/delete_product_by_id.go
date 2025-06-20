@@ -7,7 +7,8 @@ import (
 )
 
 func DeleteProductById(ctx context.Context, repo domain.ProductRepository, id uuid.UUID, vendorId uuid.UUID) error {
-
-	return repo.DeleteById(ctx, id, vendorId)
+	return repo.Transaction(func(txRepo domain.ProductRepository) error {
+		return txRepo.DeleteById(ctx, id, vendorId)
+	})
 
 }

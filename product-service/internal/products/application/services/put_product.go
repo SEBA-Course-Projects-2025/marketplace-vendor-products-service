@@ -9,15 +9,17 @@ import (
 
 func PutProduct(ctx context.Context, repo domain.ProductRepository, id uuid.UUID, productReq dtos.ProductRequest, vendorId uuid.UUID) error {
 
-	existingProduct, err := repo.FindById(ctx, id, vendorId)
+	return repo.Transaction(func(txRepo domain.ProductRepository) error {
+		existingProduct, err := txRepo.FindById(ctx, id, vendorId)
 
-	if err != nil {
-		return err
-	}
+		if err != nil {
+			return err
+		}
 
-	existingProduct = dtos.UpdateProductWithDto(existingProduct, productReq)
-	existingProduct.VendorId = vendorId
+		existingProduct = dtos.UpdateProductWithDto(existingProduct, productReq)
+		existingProduct.VendorId = vendorId
 
-	return repo.Update(ctx, existingProduct)
+		return txRepo.Update(ctx, existingProduct)
+	})
 
 }
