@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+// DeleteStockByIdHandler godoc
+// @Summary      Delete stock by ID
+// @Description  Deletes a stock by its ID for the given vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        stockId     path   string true  "Stock ID (UUID)"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/stockId"
+// @Failure      404 {object} map[string]interface{} "Stock not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks/{stockId} [delete]
 func (h *StockHandler) DeleteStockByIdHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

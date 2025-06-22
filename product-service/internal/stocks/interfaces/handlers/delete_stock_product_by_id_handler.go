@@ -9,6 +9,20 @@ import (
 	"net/http"
 )
 
+// DeleteStockProductByIdHandler godoc
+// @Summary      Delete product from stock by ID
+// @Description  Deletes a specific product from a given stock for the vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        stockId     path   string true  "Stock ID (UUID)"
+// @Param        productId   path   string true  "Product ID (UUID)"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/stockId/productId"
+// @Failure      404 {object} map[string]interface{} "Stock product not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks/{stockId}/products/{productId} [delete]
 func (h *StockHandler) DeleteStockProductByIdHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")
@@ -24,14 +38,14 @@ func (h *StockHandler) DeleteStockProductByIdHandler(c *gin.Context) {
 	stockId, err := uuid.Parse(stockIdStr)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid stock UUID"})
 		return
 	}
 
 	productId, err := uuid.Parse(productIdStr)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product UUID"})
 		return
 	}
 

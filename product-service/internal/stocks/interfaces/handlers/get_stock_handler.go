@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+// GetStockHandler godoc
+// @Summary      Get stock by ID
+// @Description  Returns a single stock by its ID for the given vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        stockId     path   string true  "Stock ID (UUID)"
+// @Success      200 {object} dtos.OneStockResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/stockId"
+// @Failure      404 {object} map[string]interface{} "Stock not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks/{stockId} [get]
 func (h *StockHandler) GetStockHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

@@ -10,6 +10,20 @@ import (
 	"net/http"
 )
 
+// PutStockHandler godoc
+// @Summary      Modify stock by ID
+// @Description  Modify a stock by its ID for the given vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string       true  "Vendor ID (UUID)"
+// @Param        stockId     path   string       true  "Stock ID (UUID)"
+// @Param        request     body   dtos.PutStockRequest true "Full stock data for replacement"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/stockId/stock data"
+// @Failure      404 {object} map[string]interface{} "Stock not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks/{stockId} [put]
 func (h *StockHandler) PutStockHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

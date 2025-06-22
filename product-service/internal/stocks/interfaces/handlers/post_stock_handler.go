@@ -8,6 +8,18 @@ import (
 	"net/http"
 )
 
+// PostStockHandler godoc
+// @Summary      Create a new stock
+// @Description  Creates a new stock for the given vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string     true  "Vendor ID (UUID)"
+// @Param        request     body   dtos.StockRequest true "Stock creation payload"
+// @Success      201 {object} dtos.PostStockResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/stock data"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks [post]
 func (h *StockHandler) PostStockHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

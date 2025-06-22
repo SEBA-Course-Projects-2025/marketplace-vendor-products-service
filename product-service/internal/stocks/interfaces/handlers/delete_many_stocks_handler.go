@@ -10,6 +10,19 @@ import (
 	"net/http"
 )
 
+// DeleteManyStocksHandler godoc
+// @Summary      Delete multiple stocks by IDs
+// @Description  Deletes multiple stocks specified by their IDs for the given vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string          true  "Vendor ID (UUID)"
+// @Param        request     body   dtos.IdsToDelete true  "List of stock IDs to delete"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/IDs of stocks to delete"
+// @Failure      404 {object} map[string]interface{} "Stock not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks [delete]
 func (h *StockHandler) DeleteManyStocksHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

@@ -10,6 +10,20 @@ import (
 	"net/http"
 )
 
+// PatchStockByIdHandler godoc
+// @Summary      Partially update stock by ID
+// @Description  Partially updates a stock by its ID for the given vendor.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string          true  "Vendor ID (UUID)"
+// @Param        stockId     path   string          true  "Stock ID (UUID)"
+// @Param        request     body   dtos.StockPatchRequest true "Fields to update"
+// @Success      200 {object} dtos.OneStockResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/stockId/stock data"
+// @Failure      404 {object} map[string]interface{}  "Stock not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks/{stockId} [patch]
 func (h *StockHandler) PatchStockByIdHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

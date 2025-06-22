@@ -9,6 +9,24 @@ import (
 	"strconv"
 )
 
+// GetAllStocksHandler godoc
+// @Summary      Get all stocks
+// @Description  Returns a paginated list of stocks for the given vendor, with optional filtering and sorting.
+// @Tags         stocks
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        page        query  int    false "Page number (default is 1)"
+// @Param        size        query  int    false "Page size (default is 15)"
+// @Param        offset      query  int    false "Custom offset (overrides page if provided)"
+// @Param        limit       query  int    false "Custom limit (overrides size if provided)"
+// @Param        location_id query  string false "Filter by location ID"
+// @Param        sortBy      query  string false "Field to sort by (default is date_supplied)"
+// @Param        sortOrder   query  string false "Sort order: asc or desc (default is asc)"
+// @Success      200 {array} dtos.GetStocksResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/page/page size/limit/offset"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /stocks [get]
 func (h *StockHandler) GetAllStocksHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")
