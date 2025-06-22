@@ -8,6 +8,18 @@ import (
 	"net/http"
 )
 
+// PostProductHandler godoc
+// @Summary      Create a new product
+// @Description  Creates a new product for the given vendor.
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        request     body   dtos.ProductRequest true "Product creation payload"
+// @Success      201 {object} dtos.OneProductResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/product data"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /products [post]
 func (h *ProductHandler) PostProductHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

@@ -10,6 +10,20 @@ import (
 	"net/http"
 )
 
+// PutProductHandler godoc
+// @Summary      Update product by ID
+// @Description  Updates an existing product by its ID for the given vendor.
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        productId   path   string true  "Product ID (UUID)"
+// @Param        request     body   dtos.ProductRequest true "Full product data"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId/product data"
+// @Failure      404 {object} map[string]interface{} "Product not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /products/{productId} [put]
 func (h *ProductHandler) PutProductHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

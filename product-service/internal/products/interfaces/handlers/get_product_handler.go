@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+// GetProductHandler godoc
+// @Summary      Get product by ID
+// @Description  Returns a single product by its ID for the given vendor.
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        productId   path   string true  "Product ID (UUID)"
+// @Success      200 {object} dtos.OneProductResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId"
+// @Failure      404 {object} map[string]interface{} "Product not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /products/{productId} [get]
 func (h *ProductHandler) GetProductHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

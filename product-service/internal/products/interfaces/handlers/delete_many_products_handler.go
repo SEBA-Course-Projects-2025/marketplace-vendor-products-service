@@ -10,6 +10,19 @@ import (
 	"net/http"
 )
 
+// DeleteManyProductsHandler godoc
+// @Summary      Delete many products
+// @Description  Deletes multiple products for the given vendor by IDs.
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        ids          body   dtos.IdsToDelete true "IDs to delete"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/IDs of products to delete"
+// @Failure      404 {object} map[string]interface{} "Product not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /products [delete]
 func (h *ProductHandler) DeleteManyProductsHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

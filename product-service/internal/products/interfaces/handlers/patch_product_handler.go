@@ -10,6 +10,20 @@ import (
 	"net/http"
 )
 
+// PatchProductHandler godoc
+// @Summary      Update product fields by ID
+// @Description  Partially updates a product by its ID for the given vendor.
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        productId   path   string true  "Product ID (UUID)"
+// @Param        request     body   dtos.ProductPatchRequest true "Fields to update"
+// @Success      200 {object} dtos.OneProductResponse
+// @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId/product data"
+// @Failure      404 {object} map[string]interface{} "Product not found"
+// @Failure      500 {object} map[string]interface{}
+// @Router       /products/{productId} [patch]
 func (h *ProductHandler) PatchProductHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")

@@ -9,6 +9,27 @@ import (
 	"strconv"
 )
 
+// GetAllProductsHandler godoc
+// @Summary      Get all products
+// @Description  Returns a paginated list of products for the given vendor, with filtering, searching and sorting options.
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        page       query     int     false  "Page number"      default(1)   minimum(1)
+// @Param        size       query     int     false  "Page size"        default(15)  minimum(1)
+// @Param        offset     query     int     false  "Offset"           default(-1)
+// @Param        limit      query     int     false  "Limit"            default(-1)
+// @Param        category   query     string  false  "Category filter"
+// @Param        minPrice   query     number  false  "Minimum price"    default(0)   minimum(0)
+// @Param        maxPrice   query     number  false  "Maximum price"    default(0)   minimum(0)
+// @Param        search     query     string  false  "Search term"
+// @Param        sortBy     query     string  false  "Sort by field"    default(name)
+// @Param        sortOrder  query     string  false  "Sort order"       default(asc) Enums(asc,desc)
+// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Success      200        {array}   dtos.GetProductsResponse
+// @Failure      400        {object}  map[string]interface{} "Invalid vendorId/page/page size/offset/limit/price"
+// @Failure      500        {object}  map[string]interface{}
+// @Router       /products [get]
 func (h *ProductHandler) GetAllProductsHandler(c *gin.Context) {
 
 	v, _ := c.Get("vendorId")
