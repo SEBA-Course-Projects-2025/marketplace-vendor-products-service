@@ -1,7 +1,7 @@
 package models
 
 import (
-	productModels "dev-vendor/product-service/internal/products/domain/models"
+	"dev-vendor/product-service/internal/products/domain/productModels"
 	"github.com/google/uuid"
 	"time"
 )
