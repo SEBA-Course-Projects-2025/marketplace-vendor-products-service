@@ -1,4 +1,4 @@
-package models
+package productModels
 
 import (
 	"github.com/google/uuid"
