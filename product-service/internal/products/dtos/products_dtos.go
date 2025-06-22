@@ -1,24 +1,24 @@
 package dtos
 
 import (
-	"dev-vendor/product-service/internal/products/domain/models"
+	"dev-vendor/product-service/internal/products/domain/productModels"
 	"github.com/google/uuid"
 	"time"
 )
 
 type OneProductResponse struct {
-	Id          uuid.UUID              `json:"id"`
-	VendorId    uuid.UUID              `json:"vendor_id"`
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Price       float64                `json:"price"`
-	Category    string                 `json:"category"`
-	Images      []models.ProductsImage `json:"images"`
-	Tags        []models.Tag           `json:"tags"`
-	Quantity    int                    `json:"quantity"`
+	Id          uuid.UUID                     `json:"id"`
+	VendorId    uuid.UUID                     `json:"vendor_id"`
+	Name        string                        `json:"name"`
+	Description string                        `json:"description"`
+	Price       float64                       `json:"price"`
+	Category    string                        `json:"category"`
+	Images      []productModels.ProductsImage `json:"images"`
+	Tags        []productModels.Tag           `json:"tags"`
+	Quantity    int                           `json:"quantity"`
 }
 
-func ProductToDto(product models.Product) OneProductResponse {
+func ProductToDto(product productModels.Product) OneProductResponse {
 	return OneProductResponse{
 		Id:          product.Id,
 		VendorId:    product.VendorId,
@@ -33,27 +33,27 @@ func ProductToDto(product models.Product) OneProductResponse {
 }
 
 type GetProductsResponse struct {
-	Id       uuid.UUID            `json:"id"`
-	VendorId uuid.UUID            `json:"vendor_id"`
-	Name     string               `json:"name"`
-	Price    float64              `json:"price"`
-	Category string               `json:"category"`
-	Image    models.ProductsImage `json:"image"`
-	Quantity int                  `json:"quantity"`
+	Id       uuid.UUID                   `json:"id"`
+	VendorId uuid.UUID                   `json:"vendor_id"`
+	Name     string                      `json:"name"`
+	Price    float64                     `json:"price"`
+	Category string                      `json:"category"`
+	Image    productModels.ProductsImage `json:"image"`
+	Quantity int                         `json:"quantity"`
 }
 
-func ProductsToDto(products []models.Product) []GetProductsResponse {
+func ProductsToDto(products []productModels.Product) []GetProductsResponse {
 
 	var productsResponse []GetProductsResponse
 
 	for _, product := range products {
 
-		var image models.ProductsImage
+		var image productModels.ProductsImage
 
 		if len(product.Images) > 0 {
 			image = product.Images[0]
 		} else {
-			image = models.ProductsImage{}
+			image = productModels.ProductsImage{}
 		}
 
 		productResponse := GetProductsResponse{
@@ -80,30 +80,30 @@ type ProductRequest struct {
 	Tags        []string `json:"tags"`
 }
 
-func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) models.Product {
+func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) productModels.Product {
 
 	productId := uuid.New()
 
-	images := make([]models.ProductsImage, 0, len(productReq.Images))
+	images := make([]productModels.ProductsImage, 0, len(productReq.Images))
 
 	for _, imageUrl := range productReq.Images {
-		images = append(images, models.ProductsImage{
+		images = append(images, productModels.ProductsImage{
 			Id:        uuid.New(),
 			ImageUrl:  imageUrl,
 			ProductId: productId,
 		})
 	}
 
-	tags := make([]models.Tag, 0, len(productReq.Tags))
+	tags := make([]productModels.Tag, 0, len(productReq.Tags))
 
 	for _, tag := range productReq.Tags {
-		tags = append(tags, models.Tag{
+		tags = append(tags, productModels.Tag{
 			Id:      uuid.New(),
 			TagName: tag,
 		})
 	}
 
-	product := models.Product{
+	product := productModels.Product{
 		Id:          productId,
 		VendorId:    vendorId,
 		Name:        productReq.Name,
@@ -120,14 +120,14 @@ func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) models.Prod
 	return product
 }
 
-func UpdateProductWithDto(existingProduct *models.Product, productReq ProductRequest) *models.Product {
+func UpdateProductWithDto(existingProduct *productModels.Product, productReq ProductRequest) *productModels.Product {
 
-	images := make([]models.ProductsImage, 0, len(productReq.Images))
+	images := make([]productModels.ProductsImage, 0, len(productReq.Images))
 
 	for _, imageUrl := range productReq.Images {
 		for _, image := range existingProduct.Images {
 			if image.ImageUrl == imageUrl {
-				images = append(images, models.ProductsImage{
+				images = append(images, productModels.ProductsImage{
 					Id:        image.Id,
 					ImageUrl:  imageUrl,
 					ProductId: existingProduct.Id,
@@ -137,12 +137,12 @@ func UpdateProductWithDto(existingProduct *models.Product, productReq ProductReq
 		}
 	}
 
-	tags := make([]models.Tag, 0, len(productReq.Tags))
+	tags := make([]productModels.Tag, 0, len(productReq.Tags))
 
 	for _, tagName := range productReq.Tags {
 		for _, tag := range existingProduct.Tags {
 			if tag.TagName == tagName {
-				tags = append(tags, models.Tag{
+				tags = append(tags, productModels.Tag{
 					Id:      tag.Id,
 					TagName: tagName,
 				})
@@ -163,15 +163,15 @@ func UpdateProductWithDto(existingProduct *models.Product, productReq ProductReq
 }
 
 type ProductPatchRequest struct {
-	Name        *string                 `json:"name"`
-	Description *string                 `json:"description"`
-	Price       *float64                `json:"price"`
-	Category    *string                 `json:"category"`
-	Images      *[]models.ProductsImage `json:"images"`
-	Tags        *[]models.Tag           `json:"tags"`
+	Name        *string                        `json:"name"`
+	Description *string                        `json:"description"`
+	Price       *float64                       `json:"price"`
+	Category    *string                        `json:"category"`
+	Images      *[]productModels.ProductsImage `json:"images"`
+	Tags        *[]productModels.Tag           `json:"tags"`
 }
 
-func PatchDtoToProduct(existingProduct *models.Product, productReq ProductPatchRequest) *models.Product {
+func PatchDtoToProduct(existingProduct *productModels.Product, productReq ProductPatchRequest) *productModels.Product {
 
 	if productReq.Name != nil {
 		existingProduct.Name = *productReq.Name
@@ -191,7 +191,7 @@ func PatchDtoToProduct(existingProduct *models.Product, productReq ProductPatchR
 
 	if productReq.Images != nil {
 
-		updatedImages := make([]models.ProductsImage, 0, len(*productReq.Images))
+		updatedImages := make([]productModels.ProductsImage, 0, len(*productReq.Images))
 		for _, patchImg := range *productReq.Images {
 			for _, existImg := range existingProduct.Images {
 				if patchImg.ImageUrl == existImg.ImageUrl {
@@ -206,7 +206,7 @@ func PatchDtoToProduct(existingProduct *models.Product, productReq ProductPatchR
 
 	if productReq.Tags != nil {
 
-		updatedTags := make([]models.Tag, 0, len(*productReq.Tags))
+		updatedTags := make([]productModels.Tag, 0, len(*productReq.Tags))
 		for _, patchTag := range *productReq.Tags {
 			for _, existTag := range existingProduct.Tags {
 				if patchTag.TagName == existTag.TagName {
