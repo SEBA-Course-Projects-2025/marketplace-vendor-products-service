@@ -1,0 +1,1208 @@
+basePath: /api
+definitions:
+  dtos.GetProductsResponse:
+    properties:
+      category:
+        type: string
+      id:
+        type: string
+      image:
+        $ref: '#/definitions/productModels.ProductsImage'
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      vendor_id:
+        type: string
+    type: object
+  dtos.GetStocksResponse:
+    properties:
+      date_supplied:
+        type: string
+      id:
+        type: string
+      location_id:
+        type: string
+    type: object
+  dtos.IdsToDelete:
+    properties:
+      ids:
+        items:
+          type: string
+        type: array
+    type: object
+  dtos.OneProductResponse:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/productModels.ProductsImage'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/productModels.Tag'
+        type: array
+      vendor_id:
+        type: string
+    type: object
+  dtos.OneStockResponse:
+    properties:
+      date_supplied:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/models.StocksLocation'
+      products:
+        items:
+          $ref: '#/definitions/dtos.StockProductInfo'
+        type: array
+      vendor_id:
+        type: string
+    type: object
+  dtos.PatchStockManyProductsRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      unit_cost:
+        type: number
+    type: object
+  dtos.PatchStockProductRequest:
+    properties:
+      quantity:
+        type: integer
+      unit_cost:
+        type: number
+    type: object
+  dtos.PostStockProductRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      unit_cost:
+        type: number
+    type: object
+  dtos.PostStockResponse:
+    properties:
+      date_supplied:
+        type: string
+      id:
+        type: string
+      location_id:
+        type: string
+      vendor_id:
+        type: string
+    type: object
+  dtos.ProductPatchRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/productModels.ProductsImage'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      tags:
+        items:
+          $ref: '#/definitions/productModels.Tag'
+        type: array
+    type: object
+  dtos.ProductRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  dtos.PutStockProductRequest:
+    properties:
+      quantity:
+        type: integer
+      unit_cost:
+        type: number
+    type: object
+  dtos.PutStockRequest:
+    properties:
+      date_supplied:
+        type: string
+      location_id:
+        type: string
+    type: object
+  dtos.StockPatchRequest:
+    properties:
+      date_supplied:
+        type: string
+      location_id:
+        type: string
+    type: object
+  dtos.StockProductInfo:
+    properties:
+      image:
+        $ref: '#/definitions/productModels.ProductsImage'
+      name:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      unit_cost:
+        type: number
+    type: object
+  dtos.StockRequest:
+    properties:
+      date_supplied:
+        type: string
+      location_id:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/dtos.PostStockProductRequest'
+        type: array
+    type: object
+  models.Stock:
+    properties:
+      createdAt:
+        type: string
+      date_supplied:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/models.StocksLocation'
+      location_id:
+        type: string
+      stocks_products:
+        items:
+          $ref: '#/definitions/models.StocksProduct'
+        type: array
+      updatedAt:
+        type: string
+      vendor_id:
+        type: string
+    type: object
+  models.StocksLocation:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      id:
+        type: string
+      stocks:
+        items:
+          $ref: '#/definitions/models.Stock'
+        type: array
+    type: object
+  models.StocksProduct:
+    properties:
+      createdAt:
+        type: string
+      product:
+        $ref: '#/definitions/productModels.Product'
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      stock:
+        $ref: '#/definitions/models.Stock'
+      stock_id:
+        type: string
+      unit_cost:
+        type: number
+      updatedAt:
+        type: string
+    type: object
+  productModels.Product:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/productModels.ProductsImage'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/productModels.Tag'
+        type: array
+      updatedAt:
+        type: string
+      vendor_id:
+        type: string
+    type: object
+  productModels.ProductsImage:
+    properties:
+      id:
+        type: string
+      image_url:
+        type: string
+      product_id:
+        type: string
+    type: object
+  productModels.Tag:
+    properties:
+      id:
+        type: string
+      tag_name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for managing products and stocks for vendors.
+  title: Product Service API
+  version: "1.0"
+paths:
+  /products:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes multiple products for the given vendor by IDs.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: IDs to delete
+        in: body
+        name: ids
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.IdsToDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid vendorId/IDs of products to delete
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Product not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete many products
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Returns a paginated list of products for the given vendor, with
+        filtering, searching and sorting options.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 15
+        description: Page size
+        in: query
+        minimum: 1
+        name: size
+        type: integer
+      - default: -1
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: -1
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Category filter
+        in: query
+        name: category
+        type: string
+      - default: 0
+        description: Minimum price
+        in: query
+        minimum: 0
+        name: minPrice
+        type: number
+      - default: 0
+        description: Maximum price
+        in: query
+        minimum: 0
+        name: maxPrice
+        type: number
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      - default: name
+        description: Sort by field
+        in: query
+        name: sortBy
+        type: string
+      - default: asc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sortOrder
+        type: string
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.GetProductsResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Product creation payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.OneProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new product
+      tags:
+      - products
+  /products/{productId}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a single product by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete product by ID
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Returns a single product by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.OneProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get product by ID
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates a product by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ProductPatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.OneProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update product fields by ID
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing product by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Full product data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update product by ID
+      tags:
+      - products
+  /stocks:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes multiple stocks specified by their IDs for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: List of stock IDs to delete
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.IdsToDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete multiple stocks by IDs
+      tags:
+      - stocks
+    get:
+      consumes:
+      - application/json
+      description: Returns a paginated list of stocks for the given vendor, with optional
+        filtering and sorting.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Page number (default is 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default is 15)
+        in: query
+        name: size
+        type: integer
+      - description: Custom offset (overrides page if provided)
+        in: query
+        name: offset
+        type: integer
+      - description: Custom limit (overrides size if provided)
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by location ID
+        in: query
+        name: location_id
+        type: string
+      - description: Field to sort by (default is date_supplied)
+        in: query
+        name: sortBy
+        type: string
+      - description: 'Sort order: asc or desc (default is asc)'
+        in: query
+        name: sortOrder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.GetStocksResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all stocks
+      tags:
+      - stocks
+    post:
+      consumes:
+      - application/json
+      description: Creates a new stock for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock creation payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.StockRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.PostStockResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new stock
+      tags:
+      - stocks
+  /stocks/{stockId}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a stock by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete stock by ID
+      tags:
+      - stocks
+    get:
+      consumes:
+      - application/json
+      description: Returns a single stock by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.OneStockResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get stock by ID
+      tags:
+      - stocks
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates a stock by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.StockPatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.OneStockResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Partially update stock by ID
+      tags:
+      - stocks
+    put:
+      consumes:
+      - application/json
+      description: Modify a stock by its ID for the given vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: Full stock data for replacement
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.PutStockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Modify stock by ID
+      tags:
+      - stocks
+  /stocks/{stockId}/products:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes multiple products specified by their IDs from a given stock
+        for the vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: List of product IDs to delete
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.IdsToDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete multiple products from a stock
+      tags:
+      - stocks
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates multiple products within a given stock for the
+        vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: List of products with fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dtos.PatchStockManyProductsRequest'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.StockProductInfo'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Partially update multiple products in a stock
+      tags:
+      - stocks
+  /stocks/{stockId}/products/{productId}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a specific product from a given stock for the vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete product from stock by ID
+      tags:
+      - stocks
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates the details of a specific product within a given
+        stock for the vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Fields to update in the stock product
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.PatchStockProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.StockProductInfo'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Partially update a product in a stock by IDs
+      tags:
+      - stocks
+    put:
+      consumes:
+      - application/json
+      description: Modifies a specific product within a given stock for the vendor.
+      parameters:
+      - description: Vendor ID (UUID)
+        in: header
+        name: X-Vendor-Id
+        required: true
+        type: string
+      - description: Stock ID (UUID)
+        in: path
+        name: stockId
+        required: true
+        type: string
+      - description: Product ID (UUID)
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Full product data for replacement
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.PutStockProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Modify a product in a stock by IDs
+      tags:
+      - stocks
+swagger: "2.0"
