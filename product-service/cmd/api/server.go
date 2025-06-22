@@ -14,6 +14,13 @@ import (
 	"time"
 )
 
+// @title Product Service API
+// @version 1.0
+// @description API for managing products and stocks for vendors.
+
+// @schemes https
+// @host marketplace-vendor-products-service.onrender.com
+// @BasePath /api
 func main() {
 
 	dbUsed, err := db.ConnectDb()
