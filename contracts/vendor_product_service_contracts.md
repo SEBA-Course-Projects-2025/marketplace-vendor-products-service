@@ -2,6 +2,8 @@
 
 ---
 
+__Swagger API Documentation: https://marketplace-vendor-products-service.onrender.com/swagger/index.html__
+
 ## 1. Get All Products Information
 
 __GET ```api/products```__
