@@ -1,7 +1,7 @@
 package dtos
 
 import (
-	products_models "dev-vendor/product-service/internal/products/domain/models"
+	"dev-vendor/product-service/internal/products/domain/productModels"
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"github.com/google/uuid"
 	"time"
@@ -16,11 +16,11 @@ type OneStockResponse struct {
 }
 
 type StockProductInfo struct {
-	Id       uuid.UUID                     `json:"product_id"`
-	Name     string                        `json:"name"`
-	Quantity int                           `json:"quantity"`
-	UnitCost float64                       `json:"unit_cost"`
-	Image    products_models.ProductsImage `json:"image"`
+	Id       uuid.UUID                   `json:"product_id"`
+	Name     string                      `json:"name"`
+	Quantity int                         `json:"quantity"`
+	UnitCost float64                     `json:"unit_cost"`
+	Image    productModels.ProductsImage `json:"image"`
 }
 
 func StockToDto(stock *models.Stock) OneStockResponse {
@@ -29,12 +29,12 @@ func StockToDto(stock *models.Stock) OneStockResponse {
 
 	for i, stockProduct := range stock.StocksProducts {
 
-		var image products_models.ProductsImage
+		var image productModels.ProductsImage
 
 		if len(stockProduct.Product.Images) > 0 {
 			image = stockProduct.Product.Images[0]
 		} else {
-			image = products_models.ProductsImage{}
+			image = productModels.ProductsImage{}
 		}
 
 		products[i] = StockProductInfo{
