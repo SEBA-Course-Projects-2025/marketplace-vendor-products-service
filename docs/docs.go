@@ -124,7 +124,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/page/page size/offset/limit/price",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -177,7 +177,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/product data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -245,7 +245,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -291,14 +291,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/productId",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -359,14 +359,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/productId/product data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -418,14 +418,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/productId",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -485,14 +485,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/productId/product data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -583,7 +583,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/page/page size/limit/offset",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -636,7 +636,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stock data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -690,14 +690,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/IDs of stocks to delete",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -750,14 +750,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -818,14 +818,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/stock data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -877,14 +877,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -944,14 +944,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/stock data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -1014,14 +1014,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/IDs of products to delete",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock products not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -1087,14 +1087,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/stock product data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock products not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -1164,14 +1164,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/productId/stock product data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -1230,14 +1230,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/productId",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -1304,14 +1304,14 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid vendorId/stockId/productId/stock product data",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Stock product not found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -1781,9 +1781,9 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "marketplace-vendor-products-service.onrender.com",
 	BasePath:         "/api",
-	Schemes:          []string{},
+	Schemes:          []string{"https"},
 	Title:            "Product Service API",
 	Description:      "API for managing products and stocks for vendors.",
 	InfoInstanceName: "swagger",

@@ -290,7 +290,7 @@ definitions:
       tag_name:
         type: string
     type: object
-host: localhost:8080
+host: marketplace-vendor-products-service.onrender.com
 info:
   contact: {}
   description: API for managing products and stocks for vendors.
@@ -333,7 +333,7 @@ paths:
             additionalProperties: true
             type: object
         "500":
-          description: Internal server error
+          description: Internal Server Error
           schema:
             additionalProperties: true
             type: object
@@ -416,7 +416,7 @@ paths:
               $ref: '#/definitions/dtos.GetProductsResponse'
             type: array
         "400":
-          description: Bad Request
+          description: Invalid vendorId/page/page size/offset/limit/price
           schema:
             additionalProperties: true
             type: object
@@ -452,7 +452,7 @@ paths:
           schema:
             $ref: '#/definitions/dtos.OneProductResponse'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/product data
           schema:
             additionalProperties: true
             type: object
@@ -489,12 +489,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/productId
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Product not found
           schema:
             additionalProperties: true
             type: object
@@ -529,12 +529,12 @@ paths:
           schema:
             $ref: '#/definitions/dtos.OneProductResponse'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/productId
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Product not found
           schema:
             additionalProperties: true
             type: object
@@ -575,12 +575,12 @@ paths:
           schema:
             $ref: '#/definitions/dtos.OneProductResponse'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/productId/product data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Product not found
           schema:
             additionalProperties: true
             type: object
@@ -622,12 +622,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/productId/product data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Product not found
           schema:
             additionalProperties: true
             type: object
@@ -665,12 +665,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/IDs of stocks to delete
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock not found
           schema:
             additionalProperties: true
             type: object
@@ -731,7 +731,7 @@ paths:
               $ref: '#/definitions/dtos.GetStocksResponse'
             type: array
         "400":
-          description: Bad Request
+          description: Invalid vendorId/page/page size/limit/offset
           schema:
             additionalProperties: true
             type: object
@@ -767,7 +767,7 @@ paths:
           schema:
             $ref: '#/definitions/dtos.PostStockResponse'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stock data
           schema:
             additionalProperties: true
             type: object
@@ -804,12 +804,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock not found
           schema:
             additionalProperties: true
             type: object
@@ -844,12 +844,12 @@ paths:
           schema:
             $ref: '#/definitions/dtos.OneStockResponse'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock not found
           schema:
             additionalProperties: true
             type: object
@@ -890,12 +890,12 @@ paths:
           schema:
             $ref: '#/definitions/dtos.OneStockResponse'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/stock data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock not found
           schema:
             additionalProperties: true
             type: object
@@ -937,12 +937,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/stock data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock not found
           schema:
             additionalProperties: true
             type: object
@@ -986,12 +986,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/IDs of products to delete
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock products not found
           schema:
             additionalProperties: true
             type: object
@@ -1037,12 +1037,12 @@ paths:
               $ref: '#/definitions/dtos.StockProductInfo'
             type: array
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/stock product data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock products not found
           schema:
             additionalProperties: true
             type: object
@@ -1084,12 +1084,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/productId
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock product not found
           schema:
             additionalProperties: true
             type: object
@@ -1136,12 +1136,12 @@ paths:
           schema:
             $ref: '#/definitions/dtos.StockProductInfo'
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/productId/stock product data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock product not found
           schema:
             additionalProperties: true
             type: object
@@ -1188,12 +1188,12 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid vendorId/stockId/productId/stock product data
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Stock product not found
           schema:
             additionalProperties: true
             type: object
@@ -1205,4 +1205,6 @@ paths:
       summary: Modify a product in a stock by IDs
       tags:
       - stocks
+schemes:
+- https
 swagger: "2.0"
