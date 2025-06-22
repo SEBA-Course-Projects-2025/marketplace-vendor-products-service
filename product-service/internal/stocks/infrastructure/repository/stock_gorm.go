@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	productsModels "dev-vendor/product-service/internal/products/domain/models"
+	productsModels "dev-vendor/product-service/internal/products/domain/productModels"
 	"dev-vendor/product-service/internal/shared/utils"
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/domain/models"
