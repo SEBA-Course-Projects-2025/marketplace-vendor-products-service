@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"dev-vendor/product-service/internal/products/domain"
-	"dev-vendor/product-service/internal/products/domain/models"
+	"dev-vendor/product-service/internal/products/domain/productModels"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
@@ -19,9 +19,9 @@ func New(db *gorm.DB) *GormProductRepository {
 	return &GormProductRepository{db: db}
 }
 
-func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*models.Product, error) {
+func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*productModels.Product, error) {
 
-	var product models.Product
+	var product productModels.Product
 
 	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ? AND vendor_id = ?", id, vendorId).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error getting product data")
@@ -31,9 +31,9 @@ func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, ve
 
 }
 
-func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) (*[]models.Product, error) {
+func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) (*[]productModels.Product, error) {
 
-	var products []models.Product
+	var products []productModels.Product
 
 	db := gpr.db.WithContext(ctx)
 
@@ -85,7 +85,7 @@ func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.Produ
 
 }
 
-func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *models.Product, vendorId uuid.UUID) (*models.Product, error) {
+func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *productModels.Product, vendorId uuid.UUID) (*productModels.Product, error) {
 
 	newProduct.VendorId = vendorId
 
@@ -97,7 +97,7 @@ func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *models
 
 }
 
-func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *models.Product) error {
+func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *productModels.Product) error {
 
 	res := gpr.db.WithContext(ctx).Save(updatedProduct)
 
@@ -113,7 +113,7 @@ func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *mo
 
 }
 
-func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *models.Product) (*models.Product, error) {
+func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *productModels.Product) (*productModels.Product, error) {
 
 	res := gpr.db.WithContext(ctx).Save(modifiedProduct)
 
@@ -131,7 +131,7 @@ func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *mo
 
 func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) error {
 
-	res := gpr.db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&models.Product{})
+	res := gpr.db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&productModels.Product{})
 	if res.Error != nil {
 		return utils.ErrorHandler(res.Error, "Error deleting product")
 	}
@@ -145,7 +145,7 @@ func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, 
 
 func (gpr *GormProductRepository) DeleteMany(ctx context.Context, ids []uuid.UUID, vendorId uuid.UUID) error {
 
-	res := gpr.db.WithContext(ctx).Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&models.Product{})
+	res := gpr.db.WithContext(ctx).Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&productModels.Product{})
 
 	if res.Error != nil {
 		return utils.ErrorHandler(res.Error, "Error deleting product")
