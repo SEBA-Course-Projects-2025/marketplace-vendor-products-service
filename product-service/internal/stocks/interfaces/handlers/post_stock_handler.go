@@ -14,7 +14,7 @@ import (
 // @Tags         stocks
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string     true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        request     body   dtos.StockRequest true "Stock creation payload"
 // @Success      201 {object} dtos.PostStockResponse
 // @Failure      400 {object} map[string]interface{} "Invalid vendorId/stock data"

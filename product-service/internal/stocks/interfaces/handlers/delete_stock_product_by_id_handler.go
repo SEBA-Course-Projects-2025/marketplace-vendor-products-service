@@ -15,7 +15,7 @@ import (
 // @Tags         stocks
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        stockId     path   string true  "Stock ID (UUID)"
 // @Param        productId   path   string true  "Product ID (UUID)"
 // @Success      200 {object} map[string]interface{}

@@ -16,7 +16,7 @@ import (
 // @Tags         stocks
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string                            true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        stockId     path   string                            true  "Stock ID (UUID)"
 // @Param        request     body   []dtos.PatchStockManyProductsRequest true "List of products with fields to update"
 // @Success      200 {array}  dtos.StockProductInfo

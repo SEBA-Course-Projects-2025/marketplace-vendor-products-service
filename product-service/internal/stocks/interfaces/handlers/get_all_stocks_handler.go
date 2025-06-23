@@ -15,7 +15,7 @@ import (
 // @Tags         stocks
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        page        query  int    false "Page number (default is 1)"
 // @Param        size        query  int    false "Page size (default is 15)"
 // @Param        offset      query  int    false "Custom offset (overrides page if provided)"

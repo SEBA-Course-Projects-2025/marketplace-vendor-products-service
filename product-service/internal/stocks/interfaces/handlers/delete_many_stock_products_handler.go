@@ -16,7 +16,7 @@ import (
 // @Tags         stocks
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string          true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        stockId     path   string          true  "Stock ID (UUID)"
 // @Param        request     body   dtos.IdsToDelete true  "List of product IDs to delete"
 // @Success      200 {object} map[string]interface{}
