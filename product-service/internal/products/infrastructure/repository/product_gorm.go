@@ -31,7 +31,7 @@ func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, ve
 
 }
 
-func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) (*[]productModels.Product, error) {
+func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) ([]productModels.Product, error) {
 
 	var products []productModels.Product
 
@@ -81,7 +81,7 @@ func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.Produ
 		return nil, utils.ErrorHandler(err, "Error getting paginated products data")
 	}
 
-	return &products, nil
+	return products, nil
 
 }
 
