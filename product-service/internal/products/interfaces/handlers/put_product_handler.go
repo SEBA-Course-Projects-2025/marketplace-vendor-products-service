@@ -16,7 +16,7 @@ import (
 // @Tags         products
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        productId   path   string true  "Product ID (UUID)"
 // @Param        request     body   dtos.ProductRequest true "Full product data"
 // @Success      200 {object} map[string]interface{}

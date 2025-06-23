@@ -15,7 +15,7 @@ import (
 // @Tags         products
 // @Accept       json
 // @Produce      json
-// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Param        productId   path   string true  "Product ID (UUID)"
 // @Success      200 {object} dtos.OneProductResponse
 // @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId"

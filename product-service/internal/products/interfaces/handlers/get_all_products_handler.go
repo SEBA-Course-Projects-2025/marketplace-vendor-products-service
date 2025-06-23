@@ -25,7 +25,7 @@ import (
 // @Param        search     query     string  false  "Search term"
 // @Param        sortBy     query     string  false  "Sort by field"    default(name)
 // @Param        sortOrder  query     string  false  "Sort order"       default(asc) Enums(asc,desc)
-// @Param        X-Vendor-Id header string true  "Vendor ID (UUID)"
+// @Param        Authorization header string true "Bearer access token"
 // @Success      200        {array}   dtos.GetProductsResponse
 // @Failure      400        {object}  map[string]interface{} "Invalid vendorId/page/page size/offset/limit/price"
 // @Failure      500        {object}  map[string]interface{}
