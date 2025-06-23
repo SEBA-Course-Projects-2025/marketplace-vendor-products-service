@@ -15,6 +15,6 @@ func GetAllProducts(ctx context.Context, repo domain.ProductRepository, params d
 		return nil, err
 	}
 
-	return dtos.ProductsToDto(*products), nil
+	return dtos.ProductsToDto(products), nil
 
 }
