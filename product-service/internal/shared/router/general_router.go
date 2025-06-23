@@ -18,7 +18,7 @@ func SetUpRouter(productHandler *productsHandlers.ProductHandler, stockHandler *
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	api := r.Group("/api", middlewares.VendorIdMiddleware())
+	api := r.Group("/api", middlewares.AuthMiddleware())
 
 	productInterfaces.SetUpProductsRouter(api, productHandler)
 	stocksInterfaces.SetUpStocksRouter(api, stockHandler)
