@@ -303,9 +303,9 @@ paths:
       - application/json
       description: Deletes multiple products for the given vendor by IDs.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: IDs to delete
@@ -401,9 +401,9 @@ paths:
         in: query
         name: sortOrder
         type: string
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       produces:
@@ -433,9 +433,9 @@ paths:
       - application/json
       description: Creates a new product for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Product creation payload
@@ -470,9 +470,9 @@ paths:
       - application/json
       description: Deletes a single product by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Product ID (UUID)
@@ -511,9 +511,9 @@ paths:
       - application/json
       description: Returns a single product by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Product ID (UUID)
@@ -551,9 +551,9 @@ paths:
       - application/json
       description: Partially updates a product by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Product ID (UUID)
@@ -597,9 +597,9 @@ paths:
       - application/json
       description: Updates an existing product by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Product ID (UUID)
@@ -645,9 +645,9 @@ paths:
       - application/json
       description: Deletes multiple stocks specified by their IDs for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: List of stock IDs to delete
@@ -688,9 +688,9 @@ paths:
       description: Returns a paginated list of stocks for the given vendor, with optional
         filtering and sorting.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Page number (default is 1)
@@ -748,9 +748,9 @@ paths:
       - application/json
       description: Creates a new stock for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock creation payload
@@ -785,9 +785,9 @@ paths:
       - application/json
       description: Deletes a stock by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -826,9 +826,9 @@ paths:
       - application/json
       description: Returns a single stock by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -866,9 +866,9 @@ paths:
       - application/json
       description: Partially updates a stock by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -912,9 +912,9 @@ paths:
       - application/json
       description: Modify a stock by its ID for the given vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -961,9 +961,9 @@ paths:
       description: Deletes multiple products specified by their IDs from a given stock
         for the vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -1009,9 +1009,9 @@ paths:
       description: Partially updates multiple products within a given stock for the
         vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -1060,9 +1060,9 @@ paths:
       - application/json
       description: Deletes a specific product from a given stock for the vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -1107,9 +1107,9 @@ paths:
       description: Partially updates the details of a specific product within a given
         stock for the vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)
@@ -1158,9 +1158,9 @@ paths:
       - application/json
       description: Modifies a specific product within a given stock for the vendor.
       parameters:
-      - description: Vendor ID (UUID)
+      - description: Bearer access token
         in: header
-        name: X-Vendor-Id
+        name: Authorization
         required: true
         type: string
       - description: Stock ID (UUID)

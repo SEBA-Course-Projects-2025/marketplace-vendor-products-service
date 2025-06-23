@@ -107,8 +107,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     }
@@ -154,8 +154,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -207,8 +207,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -270,8 +270,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -328,8 +328,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -396,8 +396,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -455,8 +455,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -524,8 +524,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -613,8 +613,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -666,8 +666,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -729,8 +729,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -787,8 +787,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -855,8 +855,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -914,8 +914,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -983,8 +983,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -1051,8 +1051,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -1126,8 +1126,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -1201,8 +1201,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -1267,8 +1267,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vendor ID (UUID)",
-                        "name": "X-Vendor-Id",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
