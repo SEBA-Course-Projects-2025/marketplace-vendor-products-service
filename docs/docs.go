@@ -713,6 +713,91 @@ const docTemplate = `{
                 }
             }
         },
+        "/stocks/:stockId/products": {
+            "get": {
+                "description": "Returns a paginated list of stock products for the given vendor with optional sorting.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stocks"
+                ],
+                "summary": "Get all stock products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number (default is 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (default is 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Custom offset (overrides page if provided)",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Custom limit (overrides size if provided)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by (default is name)",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order: asc or desc (default is asc)",
+                        "name": "sortOrder",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.StockProductsResponseDto"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid vendorId/page/page size/limit/offset",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/stocks/{stockId}": {
             "get": {
                 "description": "Returns a single stock by its ID for the given vendor.",
@@ -1339,7 +1424,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image": {
-                    "$ref": "#/definitions/productModels.ProductsImage"
+                    "$ref": "#/definitions/dtos.ProductsImageDto"
                 },
                 "name": {
                     "type": "string"
@@ -1395,7 +1480,7 @@ const docTemplate = `{
                 "images": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/productModels.ProductsImage"
+                        "$ref": "#/definitions/dtos.ProductsImageDto"
                     }
                 },
                 "name": {
@@ -1410,7 +1495,7 @@ const docTemplate = `{
                 "tags": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/productModels.Tag"
+                        "$ref": "#/definitions/dtos.TagDto"
                     }
                 },
                 "vendor_id": {
@@ -1428,7 +1513,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "location": {
-                    "$ref": "#/definitions/models.StocksLocation"
+                    "$ref": "#/definitions/dtos.StocksLocationDto"
                 },
                 "products": {
                     "type": "array",
@@ -1509,7 +1594,7 @@ const docTemplate = `{
                 "images": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/productModels.ProductsImage"
+                        "$ref": "#/definitions/dtos.ProductsImageDto"
                     }
                 },
                 "name": {
@@ -1521,7 +1606,7 @@ const docTemplate = `{
                 "tags": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/productModels.Tag"
+                        "$ref": "#/definitions/dtos.TagDto"
                     }
                 }
             }
@@ -1552,6 +1637,20 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "dtos.ProductsImageDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
                 }
             }
         },
@@ -1592,7 +1691,27 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "image": {
-                    "$ref": "#/definitions/productModels.ProductsImage"
+                    "$ref": "#/definitions/dtos.ProductsImageDto"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "unit_cost": {
+                    "type": "number"
+                }
+            }
+        },
+        "dtos.StockProductsResponseDto": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -1625,39 +1744,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Stock": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "date_supplied": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "location": {
-                    "$ref": "#/definitions/models.StocksLocation"
-                },
-                "location_id": {
-                    "type": "string"
-                },
-                "stocks_products": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.StocksProduct"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "vendor_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.StocksLocation": {
+        "dtos.StocksLocationDto": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1668,103 +1755,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
-                },
-                "stocks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Stock"
-                    }
                 }
             }
         },
-        "models.StocksProduct": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "product": {
-                    "$ref": "#/definitions/productModels.Product"
-                },
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "stock": {
-                    "$ref": "#/definitions/models.Stock"
-                },
-                "stock_id": {
-                    "type": "string"
-                },
-                "unit_cost": {
-                    "type": "number"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "productModels.Product": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/productModels.ProductsImage"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/productModels.Tag"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "vendor_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "productModels.ProductsImage": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "product_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "productModels.Tag": {
+        "dtos.TagDto": {
             "type": "object",
             "properties": {
                 "id": {

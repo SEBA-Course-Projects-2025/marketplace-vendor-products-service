@@ -7,7 +7,7 @@ definitions:
       id:
         type: string
       image:
-        $ref: '#/definitions/productModels.ProductsImage'
+        $ref: '#/definitions/dtos.ProductsImageDto'
       name:
         type: string
       price:
@@ -43,7 +43,7 @@ definitions:
         type: string
       images:
         items:
-          $ref: '#/definitions/productModels.ProductsImage'
+          $ref: '#/definitions/dtos.ProductsImageDto'
         type: array
       name:
         type: string
@@ -53,7 +53,7 @@ definitions:
         type: integer
       tags:
         items:
-          $ref: '#/definitions/productModels.Tag'
+          $ref: '#/definitions/dtos.TagDto'
         type: array
       vendor_id:
         type: string
@@ -65,7 +65,7 @@ definitions:
       id:
         type: string
       location:
-        $ref: '#/definitions/models.StocksLocation'
+        $ref: '#/definitions/dtos.StocksLocationDto'
       products:
         items:
           $ref: '#/definitions/dtos.StockProductInfo'
@@ -117,7 +117,7 @@ definitions:
         type: string
       images:
         items:
-          $ref: '#/definitions/productModels.ProductsImage'
+          $ref: '#/definitions/dtos.ProductsImageDto'
         type: array
       name:
         type: string
@@ -125,7 +125,7 @@ definitions:
         type: number
       tags:
         items:
-          $ref: '#/definitions/productModels.Tag'
+          $ref: '#/definitions/dtos.TagDto'
         type: array
     type: object
   dtos.ProductRequest:
@@ -146,6 +146,15 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  dtos.ProductsImageDto:
+    properties:
+      id:
+        type: string
+      image_url:
+        type: string
+      product_id:
+        type: string
     type: object
   dtos.PutStockProductRequest:
     properties:
@@ -171,7 +180,20 @@ definitions:
   dtos.StockProductInfo:
     properties:
       image:
-        $ref: '#/definitions/productModels.ProductsImage'
+        $ref: '#/definitions/dtos.ProductsImageDto'
+      name:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      unit_cost:
+        type: number
+    type: object
+  dtos.StockProductsResponseDto:
+    properties:
+      image:
+        type: string
       name:
         type: string
       product_id:
@@ -192,28 +214,7 @@ definitions:
           $ref: '#/definitions/dtos.PostStockProductRequest'
         type: array
     type: object
-  models.Stock:
-    properties:
-      createdAt:
-        type: string
-      date_supplied:
-        type: string
-      id:
-        type: string
-      location:
-        $ref: '#/definitions/models.StocksLocation'
-      location_id:
-        type: string
-      stocks_products:
-        items:
-          $ref: '#/definitions/models.StocksProduct'
-        type: array
-      updatedAt:
-        type: string
-      vendor_id:
-        type: string
-    type: object
-  models.StocksLocation:
+  dtos.StocksLocationDto:
     properties:
       address:
         type: string
@@ -221,69 +222,8 @@ definitions:
         type: string
       id:
         type: string
-      stocks:
-        items:
-          $ref: '#/definitions/models.Stock'
-        type: array
     type: object
-  models.StocksProduct:
-    properties:
-      createdAt:
-        type: string
-      product:
-        $ref: '#/definitions/productModels.Product'
-      product_id:
-        type: string
-      quantity:
-        type: integer
-      stock:
-        $ref: '#/definitions/models.Stock'
-      stock_id:
-        type: string
-      unit_cost:
-        type: number
-      updatedAt:
-        type: string
-    type: object
-  productModels.Product:
-    properties:
-      category:
-        type: string
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      images:
-        items:
-          $ref: '#/definitions/productModels.ProductsImage'
-        type: array
-      name:
-        type: string
-      price:
-        type: number
-      quantity:
-        type: integer
-      tags:
-        items:
-          $ref: '#/definitions/productModels.Tag'
-        type: array
-      updatedAt:
-        type: string
-      vendor_id:
-        type: string
-    type: object
-  productModels.ProductsImage:
-    properties:
-      id:
-        type: string
-      image_url:
-        type: string
-      product_id:
-        type: string
-    type: object
-  productModels.Tag:
+  dtos.TagDto:
     properties:
       id:
         type: string
@@ -777,6 +717,64 @@ paths:
             additionalProperties: true
             type: object
       summary: Create a new stock
+      tags:
+      - stocks
+  /stocks/:stockId/products:
+    get:
+      consumes:
+      - application/json
+      description: Returns a paginated list of stock products for the given vendor
+        with optional sorting.
+      parameters:
+      - description: Bearer access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Page number (default is 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default is 10)
+        in: query
+        name: size
+        type: integer
+      - description: Custom offset (overrides page if provided)
+        in: query
+        name: offset
+        type: integer
+      - description: Custom limit (overrides size if provided)
+        in: query
+        name: limit
+        type: integer
+      - description: Field to sort by (default is name)
+        in: query
+        name: sortBy
+        type: string
+      - description: 'Sort order: asc or desc (default is asc)'
+        in: query
+        name: sortOrder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.StockProductsResponseDto'
+            type: array
+        "400":
+          description: Invalid vendorId/page/page size/limit/offset
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all stock products
       tags:
       - stocks
   /stocks/{stockId}:
