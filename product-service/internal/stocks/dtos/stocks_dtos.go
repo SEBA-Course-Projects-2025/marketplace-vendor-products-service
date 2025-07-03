@@ -2,25 +2,26 @@ package dtos
 
 import (
 	"dev-vendor/product-service/internal/products/domain/productModels"
+	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"github.com/google/uuid"
 	"time"
 )
 
 type OneStockResponse struct {
-	Id           uuid.UUID             `json:"id"`
-	VendorId     uuid.UUID             `json:"vendor_id"`
-	DateSupplied time.Time             `json:"date_supplied"`
-	Location     models.StocksLocation `json:"location"`
-	Products     []StockProductInfo    `json:"products"`
+	Id           uuid.UUID          `json:"id"`
+	VendorId     uuid.UUID          `json:"vendor_id"`
+	DateSupplied time.Time          `json:"date_supplied"`
+	Location     StocksLocationDto  `json:"location"`
+	Products     []StockProductInfo `json:"products"`
 }
 
 type StockProductInfo struct {
-	Id       uuid.UUID                   `json:"product_id"`
-	Name     string                      `json:"name"`
-	Quantity int                         `json:"quantity"`
-	UnitCost float64                     `json:"unit_cost"`
-	Image    productModels.ProductsImage `json:"image"`
+	Id       uuid.UUID             `json:"product_id"`
+	Name     string                `json:"name"`
+	Quantity int                   `json:"quantity"`
+	UnitCost float64               `json:"unit_cost"`
+	Image    dtos.ProductsImageDto `json:"image"`
 }
 
 func StockToDto(stock *models.Stock) OneStockResponse {
@@ -37,20 +38,32 @@ func StockToDto(stock *models.Stock) OneStockResponse {
 			image = productModels.ProductsImage{}
 		}
 
+		imageDto := dtos.ProductsImageDto{
+			Id:        image.Id,
+			ImageUrl:  image.ImageUrl,
+			ProductId: image.ProductId,
+		}
+
 		products[i] = StockProductInfo{
 			Id:       stockProduct.Product.Id,
 			Name:     stockProduct.Product.Name,
 			Quantity: stockProduct.Quantity,
 			UnitCost: stockProduct.UnitCost,
-			Image:    image,
+			Image:    imageDto,
 		}
+	}
+
+	locationDto := StocksLocationDto{
+		Id:      stock.LocationId,
+		City:    stock.Location.City,
+		Address: stock.Location.Address,
 	}
 
 	return OneStockResponse{
 		Id:           stock.Id,
 		VendorId:     stock.VendorId,
 		DateSupplied: stock.DateSupplied,
-		Location:     stock.Location,
+		Location:     locationDto,
 		Products:     products,
 	}
 }
@@ -193,12 +206,18 @@ func ModifyStockProductWithDto(existingStockProduct *models.StocksProduct, stock
 
 func StocksProductToStockProductInfo(updatedStockProduct *models.StocksProduct) StockProductInfo {
 
+	imageDto := dtos.ProductsImageDto{
+		Id:        updatedStockProduct.Product.Images[0].Id,
+		ImageUrl:  updatedStockProduct.Product.Images[0].ImageUrl,
+		ProductId: updatedStockProduct.Product.Images[0].ProductId,
+	}
+
 	return StockProductInfo{
 		Id:       updatedStockProduct.ProductId,
 		Name:     updatedStockProduct.Product.Name,
 		Quantity: updatedStockProduct.Quantity,
 		UnitCost: updatedStockProduct.UnitCost,
-		Image:    updatedStockProduct.Product.Images[0],
+		Image:    imageDto,
 	}
 
 }
@@ -251,5 +270,58 @@ func StocksToDto(stocks []models.Stock) []GetStocksResponse {
 	}
 
 	return getStocksResponses
+
+}
+
+type StocksLocationDto struct {
+	Id      uuid.UUID `json:"id"`
+	City    string    `json:"city"`
+	Address string    `json:"address"`
+}
+
+type CheckProductQuantityEventDto struct {
+	ProductId uuid.UUID `json:"product_id"`
+	VendorId  uuid.UUID `json:"vendor_id"`
+	Quantity  int       `json:"quantity"`
+}
+
+type StockProductsQueryParams struct {
+	Limit     int    `form:"limit"`
+	Offset    int    `form:"offset"`
+	SortBy    string `form:"sortBy"`
+	SortOrder string `form:"sortOrder"`
+}
+
+type StockProductsResponseDto struct {
+	ProductId uuid.UUID `json:"product_id"`
+	Name      string    `json:"name"`
+	Quantity  int       `json:"quantity"`
+	UnitCost  float64   `json:"unit_cost"`
+	Image     string    `json:"image"`
+}
+
+func StockProductsToDto(stockProducts []models.StocksProduct) []StockProductsResponseDto {
+
+	var stockProductsResponse []StockProductsResponseDto
+
+	for _, stockProduct := range stockProducts {
+
+		imageUrl := ""
+
+		if len(stockProduct.Product.Images) > 0 {
+			imageUrl = stockProduct.Product.Images[0].ImageUrl
+		}
+
+		stockProductDto := StockProductsResponseDto{
+			ProductId: stockProduct.ProductId,
+			Name:      stockProduct.Product.Name,
+			Quantity:  stockProduct.Quantity,
+			UnitCost:  stockProduct.UnitCost,
+			Image:     imageUrl,
+		}
+		stockProductsResponse = append(stockProductsResponse, stockProductDto)
+	}
+
+	return stockProductsResponse
 
 }
