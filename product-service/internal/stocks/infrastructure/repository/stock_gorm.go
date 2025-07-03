@@ -30,9 +30,9 @@ func (gsr *GormStockRepository) FindById(ctx context.Context, id uuid.UUID, vend
 	return &stock, nil
 }
 
-func (gsr *GormStockRepository) FindAll(ctx context.Context, params dtos.StockQueryParams, vendorId uuid.UUID) (*[]models.Stock, error) {
+func (gsr *GormStockRepository) FindAll(ctx context.Context, params dtos.StockQueryParams, vendorId uuid.UUID) ([]models.Stock, error) {
 
-	var stocks *[]models.Stock
+	var stocks []models.Stock
 
 	db := gsr.db.WithContext(ctx)
 
@@ -257,6 +257,41 @@ func (gsr *GormStockRepository) FindProductStocksQuantities(ctx context.Context,
 	}
 
 	return productStocks, nil
+
+}
+
+func (gsr *GormStockRepository) FindAllStockProducts(ctx context.Context, params dtos.StockProductsQueryParams, vendorId uuid.UUID) ([]models.StocksProduct, error) {
+
+	var stockProducts []models.StocksProduct
+
+	db := gsr.db.WithContext(ctx)
+
+	db = db.Preload("Stock", "vendor_id = ?", vendorId).Preload("Product").Preload("Product").Preload("Product.Images")
+
+	allowedSortBy := map[string]string{
+		"unit-cost": "unit_cost",
+		"quantity":  "quantity",
+	}
+
+	orderField := "unit_cost"
+
+	if field, ok := allowedSortBy[params.SortBy]; ok {
+		orderField = field
+	}
+
+	orderDir := "asc"
+
+	if params.SortOrder == "desc" {
+		orderDir = "desc"
+	}
+
+	db = db.Order(orderField + " " + orderDir)
+
+	if err := db.Limit(params.Limit).Offset(params.Offset).Find(&stockProducts).Error; err != nil {
+		return nil, utils.ErrorHandler(err, "Error getting paginated stock products data")
+	}
+
+	return stockProducts, nil
 
 }
 
