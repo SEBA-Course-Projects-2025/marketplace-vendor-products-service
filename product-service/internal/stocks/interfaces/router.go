@@ -9,6 +9,7 @@ func SetUpStocksRouter(rg *gin.RouterGroup, h *handlers.StockHandler) {
 	stocks := rg.Group("stocks")
 	{
 		stocks.GET("/", h.GetAllStocksHandler)
+		stocks.GET(":stockId/products", h.GetAllStockProductsHandler)
 		stocks.POST("/", h.PostStockHandler)
 		stocks.PATCH("/:stockId/products", h.PatchStockProductsHandler)
 		stocks.DELETE("/", h.DeleteManyStocksHandler)
