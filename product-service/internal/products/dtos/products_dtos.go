@@ -3,22 +3,23 @@ package dtos
 import (
 	"dev-vendor/product-service/internal/products/domain/productModels"
 	"github.com/google/uuid"
+	"strconv"
 	"time"
 )
 
 type OneProductResponse struct {
-	Id          uuid.UUID                     `json:"id"`
-	VendorId    uuid.UUID                     `json:"vendor_id"`
-	Name        string                        `json:"name"`
-	Description string                        `json:"description"`
-	Price       float64                       `json:"price"`
-	Category    string                        `json:"category"`
-	Images      []productModels.ProductsImage `json:"images"`
-	Tags        []productModels.Tag           `json:"tags"`
-	Quantity    int                           `json:"quantity"`
+	Id          uuid.UUID          `json:"id"`
+	VendorId    uuid.UUID          `json:"vendor_id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Price       float64            `json:"price"`
+	Category    string             `json:"category"`
+	Images      []ProductsImageDto `json:"images"`
+	Tags        []TagDto           `json:"tags"`
+	Quantity    int                `json:"quantity"`
 }
 
-func ProductToDto(product productModels.Product) OneProductResponse {
+func ProductToDto(product *productModels.Product) OneProductResponse {
 	return OneProductResponse{
 		Id:          product.Id,
 		VendorId:    product.VendorId,
@@ -26,20 +27,20 @@ func ProductToDto(product productModels.Product) OneProductResponse {
 		Description: product.Description,
 		Price:       product.Price,
 		Category:    product.Category,
-		Images:      product.Images,
-		Tags:        product.Tags,
+		Images:      ProductImagesToDto(product),
+		Tags:        ProductTagsToDto(product),
 		Quantity:    product.Quantity,
 	}
 }
 
 type GetProductsResponse struct {
-	Id       uuid.UUID                   `json:"id"`
-	VendorId uuid.UUID                   `json:"vendor_id"`
-	Name     string                      `json:"name"`
-	Price    float64                     `json:"price"`
-	Category string                      `json:"category"`
-	Image    productModels.ProductsImage `json:"image"`
-	Quantity int                         `json:"quantity"`
+	Id       uuid.UUID        `json:"id"`
+	VendorId uuid.UUID        `json:"vendor_id"`
+	Name     string           `json:"name"`
+	Price    float64          `json:"price"`
+	Category string           `json:"category"`
+	Image    ProductsImageDto `json:"image"`
+	Quantity int              `json:"quantity"`
 }
 
 func ProductsToDto(products []productModels.Product) []GetProductsResponse {
@@ -56,13 +57,19 @@ func ProductsToDto(products []productModels.Product) []GetProductsResponse {
 			image = productModels.ProductsImage{}
 		}
 
+		imageDto := ProductsImageDto{
+			Id:        image.Id,
+			ImageUrl:  image.ImageUrl,
+			ProductId: image.ProductId,
+		}
+
 		productResponse := GetProductsResponse{
 			Id:       product.Id,
 			VendorId: product.VendorId,
 			Name:     product.Name,
 			Price:    product.Price,
 			Category: product.Category,
-			Image:    image,
+			Image:    imageDto,
 			Quantity: product.Quantity,
 		}
 		productsResponse = append(productsResponse, productResponse)
@@ -163,12 +170,12 @@ func UpdateProductWithDto(existingProduct *productModels.Product, productReq Pro
 }
 
 type ProductPatchRequest struct {
-	Name        *string                        `json:"name"`
-	Description *string                        `json:"description"`
-	Price       *float64                       `json:"price"`
-	Category    *string                        `json:"category"`
-	Images      *[]productModels.ProductsImage `json:"images"`
-	Tags        *[]productModels.Tag           `json:"tags"`
+	Name        *string             `json:"name"`
+	Description *string             `json:"description"`
+	Price       *float64            `json:"price"`
+	Category    *string             `json:"category"`
+	Images      *[]ProductsImageDto `json:"images"`
+	Tags        *[]TagDto           `json:"tags"`
 }
 
 func PatchDtoToProduct(existingProduct *productModels.Product, productReq ProductPatchRequest) *productModels.Product {
@@ -201,7 +208,7 @@ func PatchDtoToProduct(existingProduct *productModels.Product, productReq Produc
 			}
 		}
 
-		existingProduct.Images = *productReq.Images
+		existingProduct.Images = updatedImages
 	}
 
 	if productReq.Tags != nil {
@@ -216,7 +223,7 @@ func PatchDtoToProduct(existingProduct *productModels.Product, productReq Produc
 			}
 		}
 
-		existingProduct.Tags = *productReq.Tags
+		existingProduct.Tags = updatedTags
 	}
 
 	existingProduct.UpdatedAt = time.Now()
@@ -239,3 +246,94 @@ type ProductQueryParams struct {
 	SortOrder string  `form:"sortOrder"`
 	Search    string  `form:"search"`
 }
+
+type ProductsImageDto struct {
+	Id        uuid.UUID `json:"id"`
+	ImageUrl  string    `json:"image_url"`
+	ProductId uuid.UUID `json:"product_id"`
+}
+
+func ProductImagesToDto(product *productModels.Product) []ProductsImageDto {
+
+	var productImages []ProductsImageDto
+
+	for _, image := range product.Images {
+		productImages = append(productImages, ProductsImageDto{Id: image.Id, ImageUrl: image.ImageUrl, ProductId: image.ProductId})
+	}
+
+	return productImages
+}
+
+type TagDto struct {
+	Id      uuid.UUID `json:"id"`
+	TagName string    `json:"tag_name"`
+}
+
+func ProductTagsToDto(product *productModels.Product) []TagDto {
+
+	var productTags []TagDto
+
+	for _, tag := range product.Tags {
+		productTags = append(productTags, TagDto{Id: tag.Id, TagName: tag.TagName})
+	}
+
+	return productTags
+}
+
+type ProductCatalogEventDto struct {
+	Id          uuid.UUID          `json:"id"`
+	VendorId    uuid.UUID          `json:"vendor_id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Price       string             `json:"price"`
+	Category    string             `json:"category"`
+	Images      []ProductsImageDto `json:"images"`
+	Tags        []TagDto           `json:"tags"`
+	Quantity    int                `json:"quantity"`
+}
+
+func ProductToEventDto(product *productModels.Product) ProductCatalogEventDto {
+	return ProductCatalogEventDto{
+		Id:          product.Id,
+		VendorId:    product.VendorId,
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       strconv.FormatFloat(product.Price, 'f', -1, 64),
+		Category:    product.Category,
+		Images:      ProductImagesToDto(product),
+		Tags:        ProductTagsToDto(product),
+		Quantity:    product.Quantity,
+	}
+}
+
+type ProductUpdatedCatalogEvent struct {
+	EventId   uuid.UUID              `json:"id"`
+	Type      string                 `json:"type"`
+	Product   ProductCatalogEventDto `json:"product"`
+	CreatedAt time.Time              `json:"created_at"`
+}
+
+//func ProductToOutbox(product *productModels.Product, eventType string) (*outboxModels.Outbox, error) {
+//
+//	event := ProductUpdatedCatalogEvent{
+//		EventId:   uuid.New(),
+//		Type:      eventType,
+//		Product:   ProductToEventDto(product),
+//		CreatedAt: time.Now(),
+//	}
+//
+//	payload, err := json.Marshal(event)
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return &outboxModels.Outbox{
+//		Id:          uuid.New(),
+//		EventType:   eventType,
+//		Payload:     payload,
+//		CreatedAt:   time.Now(),
+//		Processed:   false,
+//		ProcessedAt: time.Time{},
+//	}, nil
+//}
