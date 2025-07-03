@@ -642,3 +642,29 @@ __Status codes:__
 - ```500 Internal Server Error```
 
 ---
+
+## 20. Get Stock Products Information
+
+__GET ```api/stocks/:stockId/products```__
+
+__Response:__
+
+```json
+[
+  {
+    "product_id": "uuid",
+    "name": "string",
+    "quantity": "int",
+    "unit_cost": "float64",
+    "image": "string"
+  }
+]
+```
+
+__Status codes:__
+
+- ```200 OK (success)```
+- ```400 Bad Request (invalid stockId)```
+- ```500 Internal Server Error```
+
+---
