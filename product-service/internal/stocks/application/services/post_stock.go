@@ -14,7 +14,7 @@ func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRep
 
 	var stockResponse dtos.PostStockResponse
 
-	err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	if err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		txStockRepo := stockRepo.WithTx(tx)
 		txProductRepo := productRepo.WithTx(tx)
@@ -28,7 +28,7 @@ func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRep
 			if err := txStockRepo.CheckProduct(ctx, product.ProductId, vendorId); err != nil {
 				return err
 			}
-			
+
 		}
 
 		newStock, err := dtos.PostStockRequestToStock(stockReq, vendorId)
@@ -57,9 +57,7 @@ func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRep
 		}
 
 		return nil
-	})
-
-	if err != nil {
+	}); err != nil {
 		return dtos.PostStockResponse{}, err
 	}
 

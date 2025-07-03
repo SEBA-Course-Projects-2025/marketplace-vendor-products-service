@@ -15,7 +15,7 @@ func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, p
 
 	var stockProductsRes []dtos.StockProductInfo
 
-	err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	if err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		txStockRepo := stockRepo.WithTx(tx)
 		txProductRepo := productRepo.WithTx(tx)
@@ -69,9 +69,7 @@ func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, p
 
 		return nil
 
-	})
-
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 

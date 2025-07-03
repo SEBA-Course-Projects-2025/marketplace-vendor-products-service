@@ -16,7 +16,7 @@ func PatchStockProductById(ctx context.Context, stockRepo domain.StockRepository
 
 	var updatedStockProductResponse dtos.StockProductInfo
 
-	err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	if err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		txStockRepo := stockRepo.WithTx(tx)
 		txProductRepo := productRepo.WithTx(tx)
@@ -68,9 +68,7 @@ func PatchStockProductById(ctx context.Context, stockRepo domain.StockRepository
 
 		return nil
 
-	})
-
-	if err != nil {
+	}); err != nil {
 		return dtos.StockProductInfo{}, err
 	}
 

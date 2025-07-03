@@ -15,6 +15,6 @@ func GetAllStocks(ctx context.Context, stockRepo domain.StockRepository, params 
 		return nil, err
 	}
 
-	return dtos.StocksToDto(*stocks), nil
+	return dtos.StocksToDto(stocks), nil
 
 }
