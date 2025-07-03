@@ -11,7 +11,7 @@ func PostProduct(ctx context.Context, repo domain.ProductRepository, productReq 
 
 	var productResponse dtos.OneProductResponse
 
-	err := repo.Transaction(func(txRepo domain.ProductRepository) error {
+	if err := repo.Transaction(func(txRepo domain.ProductRepository) error {
 
 		newProduct := dtos.PostDtoToProduct(productReq, vendorId)
 
@@ -21,13 +21,11 @@ func PostProduct(ctx context.Context, repo domain.ProductRepository, productReq 
 			return err
 		}
 
-		productResponse = dtos.ProductToDto(*product)
+		productResponse = dtos.ProductToDto(product)
 
 		return nil
-	})
-
-	if err != nil {
-		return dtos.OneProductResponse{}, nil
+	}); err != nil {
+		return dtos.OneProductResponse{}, err
 	}
 
 	return productResponse, nil

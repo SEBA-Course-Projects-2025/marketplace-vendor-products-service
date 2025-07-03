@@ -15,6 +15,6 @@ func GetProductById(ctx context.Context, repo domain.ProductRepository, id uuid.
 		return dtos.OneProductResponse{}, err
 	}
 
-	return dtos.ProductToDto(*product), nil
+	return dtos.ProductToDto(product), nil
 
 }

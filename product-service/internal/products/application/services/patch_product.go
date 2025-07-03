@@ -11,7 +11,7 @@ func PatchProduct(ctx context.Context, repo domain.ProductRepository, id uuid.UU
 
 	var productResponse dtos.OneProductResponse
 
-	err := repo.Transaction(func(txRepo domain.ProductRepository) error {
+	if err := repo.Transaction(func(txRepo domain.ProductRepository) error {
 		existingProduct, err := txRepo.FindById(ctx, id, vendorId)
 
 		if err != nil {
@@ -28,11 +28,9 @@ func PatchProduct(ctx context.Context, repo domain.ProductRepository, id uuid.UU
 			return err
 		}
 
-		productResponse = dtos.ProductToDto(*existingProduct)
+		productResponse = dtos.ProductToDto(existingProduct)
 		return nil
-	})
-
-	if err != nil {
+	}); err != nil {
 		return dtos.OneProductResponse{}, err
 	}
 
