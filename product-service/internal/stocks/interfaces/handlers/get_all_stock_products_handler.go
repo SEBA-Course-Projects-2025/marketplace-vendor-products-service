@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/application/services"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,9 @@ import (
 // @Failure      500 {object} map[string]interface{}
 // @Router       /stocks/:stockId/products [get]
 func (h *StockHandler) GetAllStockProductsHandler(c *gin.Context) {
+
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "GetAllStockProductsHandler")
+	defer span.End()
 
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
@@ -74,7 +78,7 @@ func (h *StockHandler) GetAllStockProductsHandler(c *gin.Context) {
 		SortOrder: sortOrder,
 	}
 
-	stockProducts, err := services.GetAllStockProducts(c.Request.Context(), h.StockRepo, queryParams, vendorId)
+	stockProducts, err := services.GetAllStockProducts(ctx, h.StockRepo, queryParams, vendorId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

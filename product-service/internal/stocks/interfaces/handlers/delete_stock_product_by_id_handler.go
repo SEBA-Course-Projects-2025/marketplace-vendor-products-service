@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/application/services"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,9 @@ import (
 // @Failure      500 {object} map[string]interface{}
 // @Router       /stocks/{stockId}/products/{productId} [delete]
 func (h *StockHandler) DeleteStockProductByIdHandler(c *gin.Context) {
+
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "DeleteStockProductByIdHandler")
+	defer span.End()
 
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
@@ -49,7 +53,7 @@ func (h *StockHandler) DeleteStockProductByIdHandler(c *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteStockProductById(c.Request.Context(), h.StockRepo, stockId, productId, vendorId); err != nil {
+	if err := services.DeleteStockProductById(ctx, h.StockRepo, stockId, productId, vendorId); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Stock product not found"})
 			return

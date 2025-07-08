@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/application/services"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,9 @@ import (
 // @Router       /stocks/{stockId} [get]
 func (h *StockHandler) GetStockHandler(c *gin.Context) {
 
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "GetStockHandler")
+	defer span.End()
+
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
@@ -40,7 +44,7 @@ func (h *StockHandler) GetStockHandler(c *gin.Context) {
 		return
 	}
 
-	stock, err := services.GetStockById(c.Request.Context(), h.StockRepo, id, vendorId)
+	stock, err := services.GetStockById(ctx, h.StockRepo, id, vendorId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Stock not found"})

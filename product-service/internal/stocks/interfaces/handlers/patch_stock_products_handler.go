@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/application/services"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"errors"
@@ -26,6 +27,9 @@ import (
 // @Router       /stocks/{stockId}/products [patch]
 func (h *StockHandler) PatchStockProductsHandler(c *gin.Context) {
 
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PatchStockProductsHandler")
+	defer span.End()
+
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
@@ -49,7 +53,7 @@ func (h *StockHandler) PatchStockProductsHandler(c *gin.Context) {
 		return
 	}
 
-	stockProducts, err := services.PatchStockProducts(c.Request.Context(), h.StockRepo, h.ProductRepo, h.Db, stockProductReq, stockId, vendorId)
+	stockProducts, err := services.PatchStockProducts(ctx, h.StockRepo, h.ProductRepo, h.EventRepo, h.Db, stockProductReq, stockId, vendorId)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
