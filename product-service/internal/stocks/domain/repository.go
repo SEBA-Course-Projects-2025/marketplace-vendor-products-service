@@ -9,7 +9,7 @@ import (
 )
 
 type StockRepository interface {
-	FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*models.Stock, error)
+	FindById(ctx context.Context, id uuid.UUID) (*models.Stock, error)
 	FindAll(ctx context.Context, params dtos.StockQueryParams, vendorId uuid.UUID) ([]models.Stock, error)
 	Create(ctx context.Context, newStock *models.Stock, vendorId uuid.UUID) (*models.Stock, error)
 	UpdateStock(ctx context.Context, updatedStock *models.Stock) error
@@ -23,7 +23,7 @@ type StockRepository interface {
 	DeleteManyStockProducts(ctx context.Context, ids []uuid.UUID, stockId uuid.UUID, vendorId uuid.UUID) error
 	CheckProduct(ctx context.Context, productId uuid.UUID, vendorId uuid.UUID) error
 	CheckLocation(ctx context.Context, locationId uuid.UUID) (*models.StocksLocation, error)
-	FindProductStocksQuantities(ctx context.Context, productId uuid.UUID, vendorId uuid.UUID) ([]models.StocksProduct, error)
+	FindProductStocksQuantities(ctx context.Context, productId uuid.UUID) ([]models.StocksProduct, error)
 	FindAllStockProducts(ctx context.Context, params dtos.StockProductsQueryParams, vendorId uuid.UUID) ([]models.StocksProduct, error)
 	Transaction(fn func(txRepo StockRepository) error) error
 	WithTx(tx *gorm.DB) StockRepository
