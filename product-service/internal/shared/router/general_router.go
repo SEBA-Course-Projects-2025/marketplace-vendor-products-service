@@ -11,11 +11,18 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func SetUpRouter(productHandler *productsHandlers.ProductHandler, stockHandler *stockHandlers.StockHandler) *gin.Engine {
 
 	r := gin.New()
+
+	p := ginprometheus.NewPrometheus("vendor-product-service")
+	p.Use(r)
+
+	r.Use(otelgin.Middleware("vendor-product-service"))
 
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
