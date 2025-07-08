@@ -1,9 +1,11 @@
 package dtos
 
 import (
+	eventModels "dev-vendor/product-service/internal/event/domain/models"
 	"dev-vendor/product-service/internal/products/domain/productModels"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/stocks/domain/models"
+	"encoding/json"
 	"github.com/google/uuid"
 	"time"
 )
@@ -279,10 +281,45 @@ type StocksLocationDto struct {
 	Address string    `json:"address"`
 }
 
-type CheckProductQuantityEventDto struct {
+type OrderCreatedEventDto struct {
+	EventId    uuid.UUID      `json:"event_id"`
+	OrderId    uuid.UUID      `json:"order_id"`
+	CustomerId uuid.UUID      `json:"customer_id"`
+	Items      []OrderItemDto `json:"items"`
+	TotalPrice float64        `json:"total_price"`
+}
+
+type OrderItemDto struct {
 	ProductId uuid.UUID `json:"product_id"`
-	VendorId  uuid.UUID `json:"vendor_id"`
 	Quantity  int       `json:"quantity"`
+}
+
+type OrderCreatedEventResponseDto struct {
+	EventId    uuid.UUID                   `json:"event_id"`
+	OrderId    uuid.UUID                   `json:"order_id"`
+	CustomerId uuid.UUID                   `json:"customer_id"`
+	Items      []OrderProductEventResponse `json:"items"`
+	TotalPrice float64                     `json:"total_price"`
+	Status     string                      `json:"status"`
+}
+
+func QuantityStatusToOutbox(resp OrderCreatedEventResponseDto, eventType, exchange string) (*eventModels.Outbox, error) {
+
+	payload, err := json.Marshal(resp)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &eventModels.Outbox{
+		Id:          uuid.New(),
+		Exchange:    exchange,
+		EventType:   eventType,
+		Payload:     payload,
+		CreatedAt:   time.Now(),
+		Processed:   false,
+		ProcessedAt: time.Time{},
+	}, nil
 }
 
 type StockProductsQueryParams struct {
@@ -324,4 +361,53 @@ func StockProductsToDto(stockProducts []models.StocksProduct) []StockProductsRes
 
 	return stockProductsResponse
 
+}
+
+type OrderProductEventResponse struct {
+	VendorId    uuid.UUID `json:"vendor_id"`
+	ProductId   uuid.UUID `json:"product_id"`
+	StockId     uuid.UUID `json:"stock_id"`
+	ProductName string    `json:"product_name"`
+	Quantity    int       `json:"quantity"`
+	ImageUrl    string    `json:"image_url"`
+	UnitPrice   float64   `json:"unit_price"`
+}
+
+func OrderItemsToEventResponseDto(products []productModels.Product, items []OrderItemDto, stockIds map[uuid.UUID]uuid.UUID) []OrderProductEventResponse {
+
+	var resp []OrderProductEventResponse
+
+	for _, item := range items {
+		for _, product := range products {
+			if product.Id == item.ProductId {
+
+				imageUrl := ""
+
+				if len(product.Images) > 0 {
+					imageUrl = product.Images[0].ImageUrl
+				}
+
+				resp = append(resp, OrderProductEventResponse{
+					VendorId:    product.VendorId,
+					ProductId:   product.Id,
+					StockId:     stockIds[product.Id],
+					ProductName: product.Name,
+					Quantity:    item.Quantity,
+					ImageUrl:    imageUrl,
+					UnitPrice:   product.Price,
+				})
+
+				break
+			}
+		}
+	}
+
+	return resp
+}
+
+type CanceledOrderItemDto struct {
+	EventId   uuid.UUID `json:"event_id"`
+	StockId   uuid.UUID `json:"stock_id"`
+	ProductId uuid.UUID `json:"product_id"`
+	Quantity  int       `json:"quantity"`
 }
