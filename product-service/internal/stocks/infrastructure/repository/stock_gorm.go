@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	productsModels "dev-vendor/product-service/internal/products/domain/productModels"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/shared/utils"
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/domain/models"
@@ -19,11 +20,14 @@ func New(db *gorm.DB) *GormStockRepository {
 	return &GormStockRepository{db: db}
 }
 
-func (gsr *GormStockRepository) FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*models.Stock, error) {
+func (gsr *GormStockRepository) FindById(ctx context.Context, id uuid.UUID) (*models.Stock, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindById")
+	defer span.End()
 
 	var stock models.Stock
 
-	if err := gsr.db.WithContext(ctx).Preload("Location").Preload("StocksProducts.Product.Images").First(&stock, "id = ? AND vendor_id = ?", id, vendorId).Error; err != nil {
+	if err := gsr.db.WithContext(ctx).Preload("Location").Preload("StocksProducts.Product.Images").First(&stock, "id = ?", id).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error getting stock data")
 	}
 
@@ -31,6 +35,9 @@ func (gsr *GormStockRepository) FindById(ctx context.Context, id uuid.UUID, vend
 }
 
 func (gsr *GormStockRepository) FindAll(ctx context.Context, params dtos.StockQueryParams, vendorId uuid.UUID) ([]models.Stock, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindAll")
+	defer span.End()
 
 	var stocks []models.Stock
 
@@ -61,6 +68,9 @@ func (gsr *GormStockRepository) FindAll(ctx context.Context, params dtos.StockQu
 
 func (gsr *GormStockRepository) Create(ctx context.Context, newStock *models.Stock, vendorId uuid.UUID) (*models.Stock, error) {
 
+	ctx, span := tracer.Tracer.Start(ctx, "Create")
+	defer span.End()
+
 	newStock.VendorId = vendorId
 
 	if err := gsr.db.WithContext(ctx).Create(newStock).Error; err != nil {
@@ -72,6 +82,9 @@ func (gsr *GormStockRepository) Create(ctx context.Context, newStock *models.Sto
 }
 
 func (gsr *GormStockRepository) UpdateStock(ctx context.Context, updatedStock *models.Stock) error {
+
+	ctx, span := tracer.Tracer.Start(ctx, "UpdateStock")
+	defer span.End()
 
 	res := gsr.db.WithContext(ctx).Save(updatedStock)
 
@@ -89,6 +102,9 @@ func (gsr *GormStockRepository) UpdateStock(ctx context.Context, updatedStock *m
 
 func (gsr *GormStockRepository) UpdateStockProduct(ctx context.Context, updatedStockProduct *models.StocksProduct) error {
 
+	ctx, span := tracer.Tracer.Start(ctx, "UpdateStockProduct")
+	defer span.End()
+
 	res := gsr.db.WithContext(ctx).Save(updatedStockProduct)
 
 	if res.Error != nil {
@@ -105,6 +121,9 @@ func (gsr *GormStockRepository) UpdateStockProduct(ctx context.Context, updatedS
 
 func (gsr *GormStockRepository) PatchStockId(ctx context.Context, modifiedStock *models.Stock) (*models.Stock, error) {
 
+	ctx, span := tracer.Tracer.Start(ctx, "PatchStockId")
+	defer span.End()
+
 	res := gsr.db.WithContext(ctx).Save(modifiedStock)
 
 	if res.Error != nil {
@@ -119,6 +138,9 @@ func (gsr *GormStockRepository) PatchStockId(ctx context.Context, modifiedStock 
 }
 
 func (gsr *GormStockRepository) PatchStockProductId(ctx context.Context, modifiedStockProduct *models.StocksProduct) (*models.StocksProduct, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "PatchStockProductId")
+	defer span.End()
 
 	res := gsr.db.WithContext(ctx).Save(modifiedStockProduct)
 
@@ -135,6 +157,9 @@ func (gsr *GormStockRepository) PatchStockProductId(ctx context.Context, modifie
 }
 
 func (gsr *GormStockRepository) PatchStockProducts(ctx context.Context, modifiedStockProducts []models.StocksProduct) ([]models.StocksProduct, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "PatchStockProducts")
+	defer span.End()
 
 	for i := range modifiedStockProducts {
 
@@ -155,6 +180,9 @@ func (gsr *GormStockRepository) PatchStockProducts(ctx context.Context, modified
 
 func (gsr *GormStockRepository) DeleteStockById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) error {
 
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteStockById")
+	defer span.End()
+
 	res := gsr.db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&models.Stock{})
 	if res.Error != nil {
 		return utils.ErrorHandler(res.Error, "Error deleting stock")
@@ -168,6 +196,9 @@ func (gsr *GormStockRepository) DeleteStockById(ctx context.Context, id uuid.UUI
 }
 
 func (gsr *GormStockRepository) DeleteStockProductById(ctx context.Context, stockId uuid.UUID, productId uuid.UUID, vendorId uuid.UUID) error {
+
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteStockProductById")
+	defer span.End()
 
 	var stock models.Stock
 
@@ -189,6 +220,9 @@ func (gsr *GormStockRepository) DeleteStockProductById(ctx context.Context, stoc
 
 func (gsr *GormStockRepository) DeleteManyStocks(ctx context.Context, ids []uuid.UUID, vendorId uuid.UUID) error {
 
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteManyStocks")
+	defer span.End()
+
 	res := gsr.db.WithContext(ctx).Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&models.Stock{})
 
 	if res.Error != nil {
@@ -204,6 +238,9 @@ func (gsr *GormStockRepository) DeleteManyStocks(ctx context.Context, ids []uuid
 }
 
 func (gsr *GormStockRepository) DeleteManyStockProducts(ctx context.Context, ids []uuid.UUID, stockId uuid.UUID, vendorId uuid.UUID) error {
+
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteManyStockProducts")
+	defer span.End()
 
 	var stock models.Stock
 	if err := gsr.db.WithContext(ctx).First(&stock, "id = ? AND vendor_id = ?", stockId, vendorId).Error; err != nil {
@@ -226,6 +263,9 @@ func (gsr *GormStockRepository) DeleteManyStockProducts(ctx context.Context, ids
 
 func (gsr *GormStockRepository) CheckProduct(ctx context.Context, productId uuid.UUID, vendorId uuid.UUID) error {
 
+	ctx, span := tracer.Tracer.Start(ctx, "CheckProduct")
+	defer span.End()
+
 	var product productsModels.Product
 
 	if err := gsr.db.WithContext(ctx).First(&product, "id = ? AND vendor_id = ?", productId, vendorId).Error; err != nil {
@@ -238,6 +278,9 @@ func (gsr *GormStockRepository) CheckProduct(ctx context.Context, productId uuid
 
 func (gsr *GormStockRepository) CheckLocation(ctx context.Context, locationId uuid.UUID) (*models.StocksLocation, error) {
 
+	ctx, span := tracer.Tracer.Start(ctx, "CheckLocation")
+	defer span.End()
+
 	var location models.StocksLocation
 
 	if err := gsr.db.WithContext(ctx).First(&location, "id = ?", locationId).Error; err != nil {
@@ -248,11 +291,14 @@ func (gsr *GormStockRepository) CheckLocation(ctx context.Context, locationId uu
 
 }
 
-func (gsr *GormStockRepository) FindProductStocksQuantities(ctx context.Context, productId uuid.UUID, vendorId uuid.UUID) ([]models.StocksProduct, error) {
+func (gsr *GormStockRepository) FindProductStocksQuantities(ctx context.Context, productId uuid.UUID) ([]models.StocksProduct, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindProductStocksQuantities")
+	defer span.End()
 
 	var productStocks []models.StocksProduct
 
-	if err := gsr.db.WithContext(ctx).Where("product_id = ?", productId).Preload("Stock", "vendor_id = ?", vendorId).Find(&productStocks).Error; err != nil {
+	if err := gsr.db.WithContext(ctx).Where("product_id = ?", productId).Preload("Stock").Find(&productStocks).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error: no such products in stocks")
 	}
 
@@ -261,6 +307,9 @@ func (gsr *GormStockRepository) FindProductStocksQuantities(ctx context.Context,
 }
 
 func (gsr *GormStockRepository) FindAllStockProducts(ctx context.Context, params dtos.StockProductsQueryParams, vendorId uuid.UUID) ([]models.StocksProduct, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindAllStockProducts")
+	defer span.End()
 
 	var stockProducts []models.StocksProduct
 
