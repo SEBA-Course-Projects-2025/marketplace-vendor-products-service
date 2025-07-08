@@ -5,8 +5,10 @@ import (
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/domain/productModels"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
+	"github.com/gosimple/slug"
 	"gorm.io/gorm"
 	"log"
 )
@@ -19,11 +21,14 @@ func New(db *gorm.DB) *GormProductRepository {
 	return &GormProductRepository{db: db}
 }
 
-func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*productModels.Product, error) {
+func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID) (*productModels.Product, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindById")
+	defer span.End()
 
 	var product productModels.Product
 
-	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ? AND vendor_id = ?", id, vendorId).Error; err != nil {
+	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ?", id).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error getting product data")
 	}
 
@@ -32,6 +37,9 @@ func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID, ve
 }
 
 func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) ([]productModels.Product, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindAll")
+	defer span.End()
 
 	var products []productModels.Product
 
@@ -87,7 +95,12 @@ func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.Produ
 
 func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *productModels.Product, vendorId uuid.UUID) (*productModels.Product, error) {
 
+	ctx, span := tracer.Tracer.Start(ctx, "Create")
+	defer span.End()
+
 	newProduct.VendorId = vendorId
+
+	newProduct.Slug = slug.Make(newProduct.Name)
 
 	if err := gpr.db.WithContext(ctx).Create(newProduct).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error creating product")
@@ -98,6 +111,11 @@ func (gpr *GormProductRepository) Create(ctx context.Context, newProduct *produc
 }
 
 func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *productModels.Product) error {
+
+	ctx, span := tracer.Tracer.Start(ctx, "Update")
+	defer span.End()
+
+	updatedProduct.Slug = slug.Make(updatedProduct.Name)
 
 	res := gpr.db.WithContext(ctx).Save(updatedProduct)
 
@@ -115,6 +133,11 @@ func (gpr *GormProductRepository) Update(ctx context.Context, updatedProduct *pr
 
 func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *productModels.Product) (*productModels.Product, error) {
 
+	ctx, span := tracer.Tracer.Start(ctx, "Patch")
+	defer span.End()
+
+	modifiedProduct.Slug = slug.Make(modifiedProduct.Name)
+
 	res := gpr.db.WithContext(ctx).Save(modifiedProduct)
 
 	if res.Error != nil {
@@ -131,6 +154,9 @@ func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *pr
 
 func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) error {
 
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteById")
+	defer span.End()
+
 	res := gpr.db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&productModels.Product{})
 	if res.Error != nil {
 		return utils.ErrorHandler(res.Error, "Error deleting product")
@@ -144,6 +170,9 @@ func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, 
 }
 
 func (gpr *GormProductRepository) DeleteMany(ctx context.Context, ids []uuid.UUID, vendorId uuid.UUID) error {
+
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteMany")
+	defer span.End()
 
 	res := gpr.db.WithContext(ctx).Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&productModels.Product{})
 
