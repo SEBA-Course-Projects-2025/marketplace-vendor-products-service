@@ -3,6 +3,7 @@ package handlers
 import (
 	"dev-vendor/product-service/internal/products/application/services"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -22,6 +23,9 @@ import (
 // @Router       /products [post]
 func (h *ProductHandler) PostProductHandler(c *gin.Context) {
 
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PostProductHandler")
+	defer span.End()
+
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
@@ -36,7 +40,7 @@ func (h *ProductHandler) PostProductHandler(c *gin.Context) {
 		return
 	}
 
-	newProduct, err := services.PostProduct(c.Request.Context(), h.ProductRepo, product, vendorId)
+	newProduct, err := services.PostProduct(ctx, h.ProductRepo, h.EventRepo, h.Db, product, vendorId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -3,6 +3,7 @@ package handlers
 import (
 	"dev-vendor/product-service/internal/products/application/services"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -25,6 +26,9 @@ import (
 // @Failure      500 {object} map[string]interface{}
 // @Router       /products/{productId} [put]
 func (h *ProductHandler) PutProductHandler(c *gin.Context) {
+
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PutProductHandler")
+	defer span.End()
 
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
@@ -49,7 +53,7 @@ func (h *ProductHandler) PutProductHandler(c *gin.Context) {
 		return
 	}
 
-	err = services.PutProduct(c.Request.Context(), h.ProductRepo, id, productReq, vendorId)
+	err = services.PutProduct(ctx, h.ProductRepo, h.EventRepo, h.Db, id, productReq, vendorId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})

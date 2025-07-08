@@ -3,6 +3,7 @@ package handlers
 import (
 	"dev-vendor/product-service/internal/products/application/services"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -25,6 +26,9 @@ import (
 // @Failure      500 {object} map[string]interface{}
 // @Router       /products/{productId} [patch]
 func (h *ProductHandler) PatchProductHandler(c *gin.Context) {
+
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PacthProductHandler")
+	defer span.End()
 
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
@@ -49,7 +53,7 @@ func (h *ProductHandler) PatchProductHandler(c *gin.Context) {
 		return
 	}
 
-	product, err := services.PatchProduct(c.Request.Context(), h.ProductRepo, id, productReq, vendorId)
+	product, err := services.PatchProduct(ctx, h.ProductRepo, h.EventRepo, h.Db, id, productReq, vendorId)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

@@ -3,6 +3,7 @@ package handlers
 import (
 	"dev-vendor/product-service/internal/products/application/services"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -25,6 +26,9 @@ import (
 // @Router       /products [delete]
 func (h *ProductHandler) DeleteManyProductsHandler(c *gin.Context) {
 
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "DeleteManyProductsHandler")
+	defer span.End()
+
 	v, _ := c.Get("vendorId")
 	vendorId, ok := v.(uuid.UUID)
 	if !ok {
@@ -39,7 +43,7 @@ func (h *ProductHandler) DeleteManyProductsHandler(c *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteManyProducts(c.Request.Context(), h.ProductRepo, ids.Ids, vendorId); err != nil {
+	if err := services.DeleteManyProducts(ctx, h.ProductRepo, ids.Ids, vendorId); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 			return
