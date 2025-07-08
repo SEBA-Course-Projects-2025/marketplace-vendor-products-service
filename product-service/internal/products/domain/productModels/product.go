@@ -12,6 +12,7 @@ type Product struct {
 	Description string          `json:"description" gorm:"column:description;type:text;not null"`
 	Price       float64         `json:"price" gorm:"column:price;type:numeric(12, 2);not null"`
 	Category    string          `json:"category" gorm:"column:category;type:varchar(255);not null"`
+	Slug        string          `json:"slug" gorm:"column:slug;type:varchar(255);not null"`
 	Images      []ProductsImage `json:"images" gorm:"foreignKey:ProductId"`
 	Tags        []Tag           `json:"tags" gorm:"many2many:products_tags;"`
 	Quantity    int             `json:"quantity" gorm:"column:quantity;type:int;not null"`
