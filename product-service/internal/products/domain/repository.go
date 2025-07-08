@@ -9,7 +9,7 @@ import (
 )
 
 type ProductRepository interface {
-	FindById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) (*productModels.Product, error)
+	FindById(ctx context.Context, id uuid.UUID) (*productModels.Product, error)
 	FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) ([]productModels.Product, error)
 	Create(ctx context.Context, newProduct *productModels.Product, vendorId uuid.UUID) (*productModels.Product, error)
 	Update(ctx context.Context, updatedProduct *productModels.Product) error
