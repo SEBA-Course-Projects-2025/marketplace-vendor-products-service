@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
+	eventInfrastructure "dev-vendor/product-service/internal/event/infrastructure"
+	eventRepository "dev-vendor/product-service/internal/event/infrastructure/repository"
 	productRepository "dev-vendor/product-service/internal/products/infrastructure/repository"
 	productHandlers "dev-vendor/product-service/internal/products/interfaces/handlers"
+	"dev-vendor/product-service/internal/shared/amqp"
 	"dev-vendor/product-service/internal/shared/db"
 	mainHandler "dev-vendor/product-service/internal/shared/handler"
 	"dev-vendor/product-service/internal/shared/router"
+	"dev-vendor/product-service/internal/shared/tracer"
 	stockRepository "dev-vendor/product-service/internal/stocks/infrastructure/repository"
 	stockHandlers "dev-vendor/product-service/internal/stocks/interfaces/handlers"
 	"fmt"
@@ -28,12 +33,37 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	newTracer := tracer.InitTracer()
+	defer func() {
+		if err := newTracer(context.Background()); err != nil {
+			log.Fatalf("Error shutting down tracer: %v", err)
+		}
+	}()
+
 	productRepo := productRepository.New(dbUsed)
 	stockRepo := stockRepository.New(dbUsed)
+	eventRepo := eventRepository.New(dbUsed)
+
+	amqpConfig, err := amqp.ConnectAMQP()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	outboxPoller := eventInfrastructure.NewOutboxPoller(eventRepo, amqpConfig.Channel, time.Second*2)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		if err := outboxPoller.StartPolling(ctx, amqpConfig.ConfirmationChannel); err != nil {
+			log.Fatalln(err)
+		}
+	}()
 
 	sharedHandler := &mainHandler.Handler{
 		ProductRepo: productRepo,
 		StockRepo:   stockRepo,
+		EventRepo:   eventRepo,
 		Db:          dbUsed,
 	}
 
@@ -43,6 +73,21 @@ func main() {
 
 	stockHandler := &stockHandlers.StockHandler{
 		Handler: sharedHandler,
+	}
+
+	consumer := eventInfrastructure.NewConsumer(amqpConfig.Channel, stockHandler)
+
+	queues := []string{
+		"vendor.check.product.quantity",
+		"vendor.cancel.product.order",
+	}
+
+	for _, queue := range queues {
+		go func(q string) {
+			if err := consumer.StartConsuming(ctx, queue); err != nil {
+				log.Fatalf("Consumer error: %v", err)
+			}
+		}(queue)
 	}
 
 	mainRouter := router.SetUpRouter(productHandler, stockHandler)
