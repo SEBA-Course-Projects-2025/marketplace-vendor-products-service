@@ -2,15 +2,20 @@ package services
 
 import (
 	"context"
+	eventDomain "dev-vendor/product-service/internal/event/domain"
 	"dev-vendor/product-service/internal/products/application/services"
 	productDomain "dev-vendor/product-service/internal/products/domain"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, db *gorm.DB, stockReq dtos.StockRequest, vendorId uuid.UUID) (dtos.PostStockResponse, error) {
+func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, stockReq dtos.StockRequest, vendorId uuid.UUID) (dtos.PostStockResponse, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "PostStock")
+	defer span.End()
 
 	var stockResponse dtos.PostStockResponse
 
@@ -18,6 +23,7 @@ func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRep
 
 		txStockRepo := stockRepo.WithTx(tx)
 		txProductRepo := productRepo.WithTx(tx)
+		txEventRepo := eventRepo.WithTx(tx)
 
 		if _, err := txStockRepo.CheckLocation(ctx, stockReq.LocationId); err != nil {
 			return err
@@ -45,13 +51,13 @@ func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRep
 
 		for _, product := range stockReq.Products {
 
-			quantitySum, err := GetQuantitySum(ctx, txStockRepo, product.ProductId, vendorId)
+			quantitySum, err := GetQuantitySum(ctx, txStockRepo, product.ProductId)
 
 			if err != nil {
 				return err
 			}
 
-			if err := services.UpdateProductQuantity(ctx, txProductRepo, product.ProductId, vendorId, quantitySum); err != nil {
+			if err := services.UpdateProductQuantity(ctx, txProductRepo, txEventRepo, product.ProductId, quantitySum, "product.catalog.events"); err != nil {
 				return err
 			}
 		}

@@ -2,8 +2,10 @@ package services
 
 import (
 	"context"
+	eventDomain "dev-vendor/product-service/internal/event/domain"
 	"dev-vendor/product-service/internal/products/application/services"
 	productDomain "dev-vendor/product-service/internal/products/domain"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
@@ -11,7 +13,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, db *gorm.DB, stockProductReq []dtos.PatchStockManyProductsRequest, stockId uuid.UUID, vendorId uuid.UUID) ([]dtos.StockProductInfo, error) {
+func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, stockProductReq []dtos.PatchStockManyProductsRequest, stockId uuid.UUID, vendorId uuid.UUID) ([]dtos.StockProductInfo, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "PatchStockProducts")
+	defer span.End()
 
 	var stockProductsRes []dtos.StockProductInfo
 
@@ -19,8 +24,9 @@ func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, p
 
 		txStockRepo := stockRepo.WithTx(tx)
 		txProductRepo := productRepo.WithTx(tx)
+		txEventRepo := eventRepo.WithTx(tx)
 
-		existingStock, err := txStockRepo.FindById(ctx, stockId, vendorId)
+		existingStock, err := txStockRepo.FindById(ctx, stockId)
 		if err != nil {
 			return err
 		}
@@ -54,14 +60,14 @@ func PatchStockProducts(ctx context.Context, stockRepo domain.StockRepository, p
 
 		for _, product := range stockProductReq {
 
-			quantitySum, err := GetQuantitySum(ctx, txStockRepo, product.ProductId, vendorId)
+			quantitySum, err := GetQuantitySum(ctx, txStockRepo, product.ProductId)
 
 			if err != nil {
 				return err
 			}
 
 			if product.Quantity != nil && *product.Quantity >= 0 {
-				if err := services.UpdateProductQuantity(ctx, txProductRepo, product.ProductId, vendorId, quantitySum); err != nil {
+				if err := services.UpdateProductQuantity(ctx, txProductRepo, txEventRepo, product.ProductId, quantitySum, "product.catalog.events"); err != nil {
 					return err
 				}
 			}

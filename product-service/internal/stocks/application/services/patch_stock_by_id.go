@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
@@ -9,6 +10,9 @@ import (
 )
 
 func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stockReq dtos.StockPatchRequest, stockId uuid.UUID, vendorId uuid.UUID) (dtos.OneStockResponse, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "PatchStockById")
+	defer span.End()
 
 	var stockResponse dtos.OneStockResponse
 
@@ -24,7 +28,7 @@ func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stock
 			}
 		}
 
-		existingStock, err := txRepo.FindById(ctx, stockId, vendorId)
+		existingStock, err := txRepo.FindById(ctx, stockId)
 
 		if err != nil {
 			return err
