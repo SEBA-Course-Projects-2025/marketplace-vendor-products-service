@@ -2,15 +2,25 @@ package services
 
 import (
 	"context"
+	eventDomain "dev-vendor/product-service/internal/event/domain"
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func PutProduct(ctx context.Context, repo domain.ProductRepository, id uuid.UUID, productReq dtos.ProductRequest, vendorId uuid.UUID) error {
+func PutProduct(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, id uuid.UUID, productReq dtos.ProductRequest, vendorId uuid.UUID) error {
 
-	return repo.Transaction(func(txRepo domain.ProductRepository) error {
-		existingProduct, err := txRepo.FindById(ctx, id, vendorId)
+	ctx, span := tracer.Tracer.Start(ctx, "PutProduct")
+	defer span.End()
+
+	return db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		txProductRepo := repo.WithTx(tx)
+		txEventRepo := eventRepo.WithTx(tx)
+
+		existingProduct, err := txProductRepo.FindById(ctx, id)
 
 		if err != nil {
 			return err
@@ -19,7 +29,25 @@ func PutProduct(ctx context.Context, repo domain.ProductRepository, id uuid.UUID
 		existingProduct = dtos.UpdateProductWithDto(existingProduct, productReq)
 		existingProduct.VendorId = vendorId
 
-		return txRepo.Update(ctx, existingProduct)
+		err = txProductRepo.Update(ctx, existingProduct)
+
+		if err != nil {
+			return err
+		}
+
+		outbox, err := dtos.ProductToOutbox(existingProduct, "product.updated.catalog", "product.catalog.events")
+
+		if err != nil {
+			return err
+		}
+
+		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
+
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 
 }

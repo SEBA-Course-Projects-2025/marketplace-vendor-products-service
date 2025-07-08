@@ -4,12 +4,16 @@ import (
 	"context"
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
 	"github.com/google/uuid"
 )
 
-func GetProductById(ctx context.Context, repo domain.ProductRepository, id uuid.UUID, vendorId uuid.UUID) (dtos.OneProductResponse, error) {
+func GetProductById(ctx context.Context, repo domain.ProductRepository, id uuid.UUID) (dtos.OneProductResponse, error) {
 
-	product, err := repo.FindById(ctx, id, vendorId)
+	ctx, span := tracer.Tracer.Start(ctx, "GetOneProduct")
+	defer span.End()
+
+	product, err := repo.FindById(ctx, id)
 
 	if err != nil {
 		return dtos.OneProductResponse{}, err
