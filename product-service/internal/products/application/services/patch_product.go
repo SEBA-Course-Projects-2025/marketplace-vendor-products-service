@@ -12,7 +12,7 @@ import (
 
 func PatchProduct(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, id uuid.UUID, productReq dtos.ProductPatchRequest, vendorId uuid.UUID) (dtos.OneProductResponse, error) {
 
-	ctx, span := tracer.Tracer.Start(ctx, "PatchProduct")
+	ctx, span := tracer.Tracer.Start(ctx, "PatchProductById")
 	defer span.End()
 
 	var productResponse dtos.OneProductResponse
@@ -28,7 +28,25 @@ func PatchProduct(ctx context.Context, repo domain.ProductRepository, eventRepo 
 			return err
 		}
 
-		existingProduct = dtos.PatchDtoToProduct(existingProduct, productReq)
+		if productReq.Images != nil {
+			if err := txProductRepo.DeleteProductImages(ctx, existingProduct); err != nil {
+				return err
+			}
+		}
+
+		if productReq.Tags != nil {
+			if err := txProductRepo.DeleteProductTags(ctx, existingProduct); err != nil {
+				return err
+			}
+		}
+
+		tags, err := txProductRepo.FindAllTags(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		existingProduct = dtos.PatchDtoToProduct(existingProduct, productReq, tags)
 
 		existingProduct.VendorId = vendorId
 

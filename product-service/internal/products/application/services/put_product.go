@@ -12,7 +12,7 @@ import (
 
 func PutProduct(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, id uuid.UUID, productReq dtos.ProductRequest, vendorId uuid.UUID) error {
 
-	ctx, span := tracer.Tracer.Start(ctx, "PutProduct")
+	ctx, span := tracer.Tracer.Start(ctx, "PutProductById")
 	defer span.End()
 
 	return db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -26,7 +26,21 @@ func PutProduct(ctx context.Context, repo domain.ProductRepository, eventRepo ev
 			return err
 		}
 
-		existingProduct = dtos.UpdateProductWithDto(existingProduct, productReq)
+		if err := txProductRepo.DeleteProductImages(ctx, existingProduct); err != nil {
+			return err
+		}
+
+		if err := txProductRepo.DeleteProductTags(ctx, existingProduct); err != nil {
+			return err
+		}
+
+		tags, err := txProductRepo.FindAllTags(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		existingProduct = dtos.UpdateProductWithDto(existingProduct, productReq, tags)
 		existingProduct.VendorId = vendorId
 
 		err = txProductRepo.Update(ctx, existingProduct)
