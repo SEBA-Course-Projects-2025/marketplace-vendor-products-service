@@ -10,7 +10,7 @@ import (
 
 func GetProductById(ctx context.Context, repo domain.ProductRepository, id uuid.UUID) (dtos.OneProductResponse, error) {
 
-	ctx, span := tracer.Tracer.Start(ctx, "GetOneProduct")
+	ctx, span := tracer.Tracer.Start(ctx, "GetOneProductById")
 	defer span.End()
 
 	product, err := repo.FindById(ctx, id)
