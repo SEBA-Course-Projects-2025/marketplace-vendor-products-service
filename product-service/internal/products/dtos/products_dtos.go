@@ -133,34 +133,38 @@ func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) productMode
 	return product
 }
 
-func UpdateProductWithDto(existingProduct *productModels.Product, productReq ProductRequest) *productModels.Product {
+func UpdateProductWithDto(existingProduct *productModels.Product, productReq ProductRequest, tags []productModels.Tag) *productModels.Product {
 
 	images := make([]productModels.ProductsImage, 0, len(productReq.Images))
 
 	for _, imageUrl := range productReq.Images {
-		for _, image := range existingProduct.Images {
-			if image.ImageUrl == imageUrl {
-				images = append(images, productModels.ProductsImage{
-					Id:        image.Id,
-					ImageUrl:  imageUrl,
-					ProductId: existingProduct.Id,
+		images = append(images, productModels.ProductsImage{
+			Id:        uuid.New(),
+			ImageUrl:  imageUrl,
+			ProductId: existingProduct.Id,
+		})
+	}
+
+	newTags := make([]productModels.Tag, 0, len(productReq.Tags))
+
+	for _, tagName := range productReq.Tags {
+		foundTag := false
+		for _, existingTag := range tags {
+			if existingTag.TagName == tagName {
+				newTags = append(newTags, productModels.Tag{
+					Id:      existingTag.Id,
+					TagName: tagName,
 				})
+				foundTag = true
 				break
 			}
 		}
-	}
 
-	tags := make([]productModels.Tag, 0, len(productReq.Tags))
-
-	for _, tagName := range productReq.Tags {
-		for _, tag := range existingProduct.Tags {
-			if tag.TagName == tagName {
-				tags = append(tags, productModels.Tag{
-					Id:      tag.Id,
-					TagName: tagName,
-				})
-				break
-			}
+		if !foundTag {
+			newTags = append(newTags, productModels.Tag{
+				Id:      uuid.New(),
+				TagName: tagName,
+			})
 		}
 	}
 
@@ -169,22 +173,23 @@ func UpdateProductWithDto(existingProduct *productModels.Product, productReq Pro
 	existingProduct.Price = productReq.Price
 	existingProduct.Category = productReq.Category
 	existingProduct.Images = images
-	existingProduct.Tags = tags
+	existingProduct.Tags = newTags
 	existingProduct.UpdatedAt = time.Now()
+	existingProduct.DeletedAt = nil
 	return existingProduct
 
 }
 
 type ProductPatchRequest struct {
-	Name        *string             `json:"name"`
-	Description *string             `json:"description"`
-	Price       *float64            `json:"price"`
-	Category    *string             `json:"category"`
-	Images      *[]ProductsImageDto `json:"images"`
-	Tags        *[]TagDto           `json:"tags"`
+	Name        *string   `json:"name"`
+	Description *string   `json:"description"`
+	Price       *float64  `json:"price"`
+	Category    *string   `json:"category"`
+	Images      *[]string `json:"images"`
+	Tags        *[]string `json:"tags"`
 }
 
-func PatchDtoToProduct(existingProduct *productModels.Product, productReq ProductPatchRequest) *productModels.Product {
+func PatchDtoToProduct(existingProduct *productModels.Product, productReq ProductPatchRequest, tags []productModels.Tag) *productModels.Product {
 
 	if productReq.Name != nil {
 		existingProduct.Name = *productReq.Name
@@ -204,35 +209,52 @@ func PatchDtoToProduct(existingProduct *productModels.Product, productReq Produc
 
 	if productReq.Images != nil {
 
-		updatedImages := make([]productModels.ProductsImage, 0, len(*productReq.Images))
-		for _, patchImg := range *productReq.Images {
-			for _, existImg := range existingProduct.Images {
-				if patchImg.ImageUrl == existImg.ImageUrl {
-					updatedImages = append(updatedImages, existImg)
-					break
-				}
-			}
+		images := make([]productModels.ProductsImage, 0, len(*productReq.Images))
+
+		for _, imageUrl := range *productReq.Images {
+			images = append(images, productModels.ProductsImage{
+				Id:        uuid.New(),
+				ImageUrl:  imageUrl,
+				ProductId: existingProduct.Id,
+			})
 		}
 
-		existingProduct.Images = updatedImages
+		existingProduct.Images = images
+
 	}
 
 	if productReq.Tags != nil {
 
-		updatedTags := make([]productModels.Tag, 0, len(*productReq.Tags))
-		for _, patchTag := range *productReq.Tags {
-			for _, existTag := range existingProduct.Tags {
-				if patchTag.TagName == existTag.TagName {
-					updatedTags = append(updatedTags, existTag)
+		newTags := make([]productModels.Tag, 0, len(*productReq.Tags))
+
+		for _, tagName := range *productReq.Tags {
+			foundTag := false
+			for _, existingTag := range tags {
+				if existingTag.TagName == tagName {
+					newTags = append(newTags, productModels.Tag{
+						Id:      existingTag.Id,
+						TagName: tagName,
+					})
+					foundTag = true
 					break
 				}
 			}
+
+			if !foundTag {
+				newTags = append(newTags, productModels.Tag{
+					Id:      uuid.New(),
+					TagName: tagName,
+				})
+			}
 		}
 
-		existingProduct.Tags = updatedTags
+		existingProduct.Tags = newTags
+
 	}
 
 	existingProduct.UpdatedAt = time.Now()
+
+	existingProduct.DeletedAt = nil
 
 	return existingProduct
 
@@ -351,6 +373,35 @@ func ProductToOutbox(product *productModels.Product, eventType, exchange string)
 	event := ProductUpdatedCatalogEvent{
 		EventId: uuid.New(),
 		Product: ProductToEventDto(product),
+	}
+
+	payload, err := json.Marshal(event)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.Outbox{
+		Id:          uuid.New(),
+		Exchange:    exchange,
+		EventType:   eventType,
+		Payload:     payload,
+		CreatedAt:   time.Now(),
+		Processed:   false,
+		ProcessedAt: time.Time{},
+	}, nil
+}
+
+type DeletedProductEventDto struct {
+	EventId uuid.UUID   `json:"event_id"`
+	Ids     []uuid.UUID `json:"deleted_ids"`
+}
+
+func DeletedProductToOutbox(deletedIds []uuid.UUID, eventType, exchange string) (*models.Outbox, error) {
+
+	event := DeletedProductEventDto{
+		EventId: uuid.New(),
+		Ids:     deletedIds,
 	}
 
 	payload, err := json.Marshal(event)
