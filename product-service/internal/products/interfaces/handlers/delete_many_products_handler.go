@@ -43,7 +43,7 @@ func (h *ProductHandler) DeleteManyProductsHandler(c *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteManyProducts(ctx, h.ProductRepo, ids.Ids, vendorId); err != nil {
+	if err := services.DeleteManyProducts(ctx, h.ProductRepo, h.EventRepo, h.Db, ids.Ids, vendorId); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 			return

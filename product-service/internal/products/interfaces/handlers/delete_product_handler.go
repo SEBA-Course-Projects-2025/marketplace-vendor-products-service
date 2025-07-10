@@ -22,10 +22,10 @@ import (
 // @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId"
 // @Failure      404 {object} map[string]interface{} "Product not found"
 // @Failure      500 {object} map[string]interface{}
-// @Router       /products/{productId} [delete]
+// @Router       /products/id/{productId} [delete]
 func (h *ProductHandler) DeleteProductHandler(c *gin.Context) {
 
-	ctx, span := tracer.Tracer.Start(c.Request.Context(), "DeleteProductHandler")
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "DeleteProductByIdHandler")
 	defer span.End()
 
 	v, _ := c.Get("vendorId")
@@ -44,7 +44,7 @@ func (h *ProductHandler) DeleteProductHandler(c *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteProductById(ctx, h.ProductRepo, id, vendorId); err != nil {
+	if err := services.DeleteProductById(ctx, h.ProductRepo, h.EventRepo, h.Db, id, vendorId); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 			return

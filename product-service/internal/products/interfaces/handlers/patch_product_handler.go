@@ -24,10 +24,10 @@ import (
 // @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId/product data"
 // @Failure      404 {object} map[string]interface{} "Product not found"
 // @Failure      500 {object} map[string]interface{}
-// @Router       /products/{productId} [patch]
+// @Router       /products/id/{productId} [patch]
 func (h *ProductHandler) PatchProductHandler(c *gin.Context) {
 
-	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PacthProductHandler")
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PatchProductByIdHandler")
 	defer span.End()
 
 	v, _ := c.Get("vendorId")

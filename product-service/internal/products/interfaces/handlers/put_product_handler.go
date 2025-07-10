@@ -24,10 +24,10 @@ import (
 // @Failure      400 {object} map[string]interface{} "Invalid vendorId/productId/product data"
 // @Failure      404 {object} map[string]interface{} "Product not found"
 // @Failure      500 {object} map[string]interface{}
-// @Router       /products/{productId} [put]
+// @Router       /products/id/{productId} [put]
 func (h *ProductHandler) PutProductHandler(c *gin.Context) {
 
-	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PutProductHandler")
+	ctx, span := tracer.Tracer.Start(c.Request.Context(), "PutProductByIdHandler")
 	defer span.End()
 
 	v, _ := c.Get("vendorId")
