@@ -4,6 +4,8 @@ definitions:
     properties:
       category:
         type: string
+      created_date:
+        type: string
       id:
         type: string
       image:
@@ -36,6 +38,8 @@ definitions:
   dtos.OneProductResponse:
     properties:
       category:
+        type: string
+      created_date:
         type: string
       description:
         type: string
@@ -117,7 +121,7 @@ definitions:
         type: string
       images:
         items:
-          $ref: '#/definitions/dtos.ProductsImageDto'
+          type: string
         type: array
       name:
         type: string
@@ -125,7 +129,7 @@ definitions:
         type: number
       tags:
         items:
-          $ref: '#/definitions/dtos.TagDto'
+          type: string
         type: array
     type: object
   dtos.ProductRequest:
@@ -404,7 +408,7 @@ paths:
       summary: Create a new product
       tags:
       - products
-  /products/{productId}:
+  /products/id/{productId}:
     delete:
       consumes:
       - application/json
@@ -579,6 +583,181 @@ paths:
       summary: Update product by ID
       tags:
       - products
+  /products/slug/{slug}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a single product by its ID for the given vendor.
+      parameters:
+      - description: Bearer access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product slug (unique identifier in URL)
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid vendorId/slug
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Product not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete product by ID
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Returns a single product by its slug for the given vendor.
+      parameters:
+      - description: Bearer access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product slug (unique identifier in URL)
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.OneProductResponse'
+        "400":
+          description: Invalid vendorId/slug
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Product not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get product by slug
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates a product by its ID for the given vendor.
+      parameters:
+      - description: Bearer access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product slug (unique identifier in URL)
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ProductPatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.OneProductResponse'
+        "400":
+          description: Invalid vendorId/slug/product data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Product not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update product fields by ID
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing product by its slug for the given vendor.
+      parameters:
+      - description: Bearer access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product slug (unique identifier in URL)
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: Full product data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid vendorId/slug/product data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Product not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update product by slug
+      tags:
+      - products
   /stocks:
     delete:
       consumes:
@@ -652,6 +831,10 @@ paths:
       - description: Filter by location ID
         in: query
         name: location_id
+        type: string
+      - description: Filter by location slug
+        in: query
+        name: location_slug
         type: string
       - description: Field to sort by (default is date_supplied)
         in: query
