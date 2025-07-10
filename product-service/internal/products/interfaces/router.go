@@ -12,9 +12,15 @@ func SetUpProductsRouter(rg *gin.RouterGroup, h *handlers.ProductHandler) {
 		products.POST("/", h.PostProductHandler)
 		products.DELETE("/", h.DeleteManyProductsHandler)
 
-		products.GET("/:productId", h.GetProductHandler)
-		products.PUT("/:productId", h.PutProductHandler)
-		products.PATCH("/:productId", h.PatchProductHandler)
-		products.DELETE("/:productId", h.DeleteProductHandler)
+		products.GET("/id/:productId", h.GetProductHandler)
+		products.PUT("/id/:productId", h.PutProductHandler)
+		products.PATCH("/id/:productId", h.PatchProductHandler)
+		products.DELETE("/id/:productId", h.DeleteProductHandler)
+
+		products.GET("/slug/:slug", h.GetProductBySlugHandler)
+		products.PUT("/slug/:slug", h.PutProductBySlugHandler)
+		products.PATCH("/slug/:slug", h.PatchProductBySlugHandler)
+		products.DELETE("/slug/:slug", h.DeleteProductBySlugHandler)
+
 	}
 }
