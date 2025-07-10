@@ -22,6 +22,7 @@ import (
 // @Param        offset      query  int    false "Custom offset (overrides page if provided)"
 // @Param        limit       query  int    false "Custom limit (overrides size if provided)"
 // @Param        location_id query  string false "Filter by location ID"
+// @Param        location_slug query  string false "Filter by location slug"
 // @Param        sortBy      query  string false "Field to sort by (default is date_supplied)"
 // @Param        sortOrder   query  string false "Sort order: asc or desc (default is asc)"
 // @Success      200 {array} dtos.GetStocksResponse
@@ -70,16 +71,18 @@ func (h *StockHandler) GetAllStocksHandler(c *gin.Context) {
 	}
 
 	locationId := c.Query("location_id")
+	locationSlug := c.Query("location_slug")
 
 	sortBy := c.DefaultQuery("sortBy", "date_supplied")
 	sortOrder := c.DefaultQuery("sortOrder", "asc")
 
 	queryParams := dtos.StockQueryParams{
-		Limit:      limit,
-		Offset:     offset,
-		LocationId: locationId,
-		SortBy:     sortBy,
-		SortOrder:  sortOrder,
+		Limit:        limit,
+		Offset:       offset,
+		LocationId:   locationId,
+		LocationSlug: locationSlug,
+		SortBy:       sortBy,
+		SortOrder:    sortOrder,
 	}
 
 	stocks, err := services.GetAllStocks(ctx, h.StockRepo, queryParams, vendorId)
