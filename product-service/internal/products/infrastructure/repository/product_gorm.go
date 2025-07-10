@@ -11,6 +11,7 @@ import (
 	"github.com/gosimple/slug"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 type GormProductRepository struct {
@@ -28,12 +29,26 @@ func (gpr *GormProductRepository) FindById(ctx context.Context, id uuid.UUID) (*
 
 	var product productModels.Product
 
-	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ?", id).Error; err != nil {
+	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ? AND deleted_at IS NULL", id).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error getting product data")
 	}
 
 	return &product, nil
 
+}
+
+func (gpr *GormProductRepository) FindBySlug(ctx context.Context, slug string, vendorId uuid.UUID) (*productModels.Product, error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "FindBySlug")
+	defer span.End()
+
+	var product productModels.Product
+
+	if err := gpr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "slug = ? AND vendor_id = ? AND deleted_at IS NULL", slug, vendorId).Error; err != nil {
+		return nil, utils.ErrorHandler(err, "Error getting product data")
+	}
+
+	return &product, nil
 }
 
 func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.ProductQueryParams, vendorId uuid.UUID) ([]productModels.Product, error) {
@@ -45,7 +60,7 @@ func (gpr *GormProductRepository) FindAll(ctx context.Context, params dtos.Produ
 
 	db := gpr.db.WithContext(ctx)
 
-	db = db.Where("vendor_id = ?", vendorId)
+	db = db.Where("vendor_id = ? AND deleted_at IS NULL", vendorId)
 
 	db = db.Preload("Images").Preload("Tags")
 
@@ -152,14 +167,65 @@ func (gpr *GormProductRepository) Patch(ctx context.Context, modifiedProduct *pr
 
 }
 
+func (gpr *GormProductRepository) FindAllTags(ctx context.Context) ([]productModels.Tag, error) {
+
+	var tags []productModels.Tag
+
+	if err := gpr.db.WithContext(ctx).Find(&tags).Error; err != nil {
+		return nil, utils.ErrorHandler(err, "Error getting tags data")
+	}
+
+	return tags, nil
+
+}
+
+func (gpr *GormProductRepository) DeleteProductImages(ctx context.Context, product *productModels.Product) error {
+
+	res := gpr.db.WithContext(ctx).Where("product_id = ?", product.Id).Delete(&productModels.ProductsImage{})
+
+	if res.Error != nil {
+		return utils.ErrorHandler(res.Error, "Error deleting products images before overwriting")
+	}
+
+	return nil
+}
+
+func (gpr *GormProductRepository) DeleteProductTags(ctx context.Context, product *productModels.Product) error {
+
+	res := gpr.db.WithContext(ctx).Where("product_id = ?", product.Id).Delete(&productModels.ProductsTag{})
+
+	if res.Error != nil {
+		return utils.ErrorHandler(res.Error, "Error deleting products tags before overwriting")
+	}
+
+	return nil
+}
+
 func (gpr *GormProductRepository) DeleteById(ctx context.Context, id uuid.UUID, vendorId uuid.UUID) error {
 
 	ctx, span := tracer.Tracer.Start(ctx, "DeleteById")
 	defer span.End()
 
-	res := gpr.db.WithContext(ctx).Where("id = ? AND vendor_id = ?", id, vendorId).Delete(&productModels.Product{})
+	res := gpr.db.WithContext(ctx).Model(&productModels.Product{}).Where("id = ? AND vendor_id = ? AND deleted_at IS NULL", id, vendorId).Update("deleted_at", time.Now())
 	if res.Error != nil {
-		return utils.ErrorHandler(res.Error, "Error deleting product")
+		return utils.ErrorHandler(res.Error, "Error soft deleting product")
+	}
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
+
+}
+
+func (gpr *GormProductRepository) DeleteBySlug(ctx context.Context, slug string, vendorId uuid.UUID) error {
+
+	ctx, span := tracer.Tracer.Start(ctx, "DeleteBySlug")
+	defer span.End()
+
+	res := gpr.db.WithContext(ctx).Model(&productModels.Product{}).Where("slug = ? AND vendor_id = ? AND deleted_at IS NULL", slug, vendorId).Update("deleted_at", time.Now())
+	if res.Error != nil {
+		return utils.ErrorHandler(res.Error, "Error soft deleting product")
 	}
 	if res.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound
@@ -174,10 +240,10 @@ func (gpr *GormProductRepository) DeleteMany(ctx context.Context, ids []uuid.UUI
 	ctx, span := tracer.Tracer.Start(ctx, "DeleteMany")
 	defer span.End()
 
-	res := gpr.db.WithContext(ctx).Where("vendor_id = ? AND id IN ?", vendorId, ids).Delete(&productModels.Product{})
+	res := gpr.db.WithContext(ctx).Model(&productModels.Product{}).Where("vendor_id = ? AND id IN ? AND deleted_at IS NULL", vendorId, ids).Update("deleted_at", time.Now())
 
 	if res.Error != nil {
-		return utils.ErrorHandler(res.Error, "Error deleting product")
+		return utils.ErrorHandler(res.Error, "Error soft deleting product")
 	}
 
 	if res.RowsAffected == 0 {
