@@ -34,10 +34,18 @@ func SetUpExchange(channel *amqp.Channel) error {
 		return utils.ErrorHandler(err, err.Error())
 	}
 
+	if _, err := channel.QueueDeclare("product.deleted.catalog", true, false, false, false, nil); err != nil {
+		return utils.ErrorHandler(err, err.Error())
+	}
+
+	if err := channel.QueueBind("product.deleted.catalog", "product.deleted.catalog", "product.catalog.events", false, nil); err != nil {
+		return utils.ErrorHandler(err, err.Error())
+	}
+
 	if err := channel.ExchangeDeclare("vendor.product.events", "direct", true, false, false, false, nil); err != nil {
 		return utils.ErrorHandler(err, err.Error())
 	}
-	
+
 	if err := channel.QueueBind("vendor.product.quantity.checked", "vendor.product.quantity.checked", "vendor.product.events", false, nil); err != nil {
 		return utils.ErrorHandler(err, err.Error())
 	}
