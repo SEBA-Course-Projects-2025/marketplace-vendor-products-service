@@ -245,11 +245,12 @@ func ModifyStockManyProductsWithDto(existingStockProduct *models.StocksProduct, 
 }
 
 type StockQueryParams struct {
-	Limit      int    `form:"limit"`
-	Offset     int    `form:"offset"`
-	LocationId string `form:"location_id"`
-	SortBy     string `form:"sortBy"`
-	SortOrder  string `form:"sortOrder"`
+	Limit        int    `form:"limit"`
+	Offset       int    `form:"offset"`
+	LocationId   string `form:"location_id"`
+	LocationSlug string `form:"location_slug"`
+	SortBy       string `form:"sortBy"`
+	SortOrder    string `form:"sortOrder"`
 }
 
 type GetStocksResponse struct {
