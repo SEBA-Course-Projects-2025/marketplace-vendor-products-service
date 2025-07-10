@@ -101,7 +101,7 @@ alter table stocks_products
         foreign key (stock_id) references stocks(id) on delete cascade;
 
 alter table stocks
-    add column vendor_id uuid
+    add column vendor_id uuid;
 
 create index idx_stocks_vendor_id on stocks (vendor_id);
 
