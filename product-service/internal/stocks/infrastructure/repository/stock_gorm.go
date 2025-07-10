@@ -49,6 +49,10 @@ func (gsr *GormStockRepository) FindAll(ctx context.Context, params dtos.StockQu
 		db = db.Where("location_id = ?", params.LocationId)
 	}
 
+	if params.LocationSlug != "" {
+		db = db.Joins("JOIN stocks_locations ON stocks_locations.id = stocks.location_id").Where("stocks_locations.slug = ?", params.LocationSlug)
+	}
+
 	orderField := "date_supplied"
 	orderDir := "asc"
 
@@ -72,6 +76,13 @@ func (gsr *GormStockRepository) Create(ctx context.Context, newStock *models.Sto
 	defer span.End()
 
 	newStock.VendorId = vendorId
+
+	for _, stockProduct := range newStock.StocksProducts {
+		var product productsModels.Product
+		if err := gsr.db.WithContext(ctx).Preload("Images").Preload("Tags").First(&product, "id = ? AND deleted_at IS NULL", stockProduct.ProductId).Error; err != nil {
+			return nil, utils.ErrorHandler(err, "Error creating stock, this product is not available")
+		}
+	}
 
 	if err := gsr.db.WithContext(ctx).Create(newStock).Error; err != nil {
 		return nil, utils.ErrorHandler(err, "Error creating stock")
