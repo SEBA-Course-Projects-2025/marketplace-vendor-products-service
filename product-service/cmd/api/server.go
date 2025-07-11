@@ -9,11 +9,13 @@ import (
 	"dev-vendor/product-service/internal/shared/amqp"
 	"dev-vendor/product-service/internal/shared/db"
 	mainHandler "dev-vendor/product-service/internal/shared/handler"
+	"dev-vendor/product-service/internal/shared/logs"
 	"dev-vendor/product-service/internal/shared/router"
 	"dev-vendor/product-service/internal/shared/tracer"
 	stockRepository "dev-vendor/product-service/internal/stocks/infrastructure/repository"
 	stockHandlers "dev-vendor/product-service/internal/stocks/interfaces/handlers"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"time"
@@ -32,6 +34,13 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	newHook := &logs.LokiHook{
+		Labels: map[string]string{
+			"app": "vendor_product_service",
+		},
+	}
+	logrus.AddHook(newHook)
 
 	newTracer := tracer.InitTracer()
 	defer func() {
