@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"dev-vendor/product-service/internal/products/application/services"
+	"dev-vendor/product-service/internal/shared/metrics"
 	"dev-vendor/product-service/internal/shared/tracer"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -46,6 +47,7 @@ func (h *ProductHandler) DeleteProductBySlugHandler(c *gin.Context) {
 		return
 	}
 
+	metrics.ProductsDeletedCounter.Inc()
 	c.JSON(http.StatusOK, gin.H{})
 
 }

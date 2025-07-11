@@ -3,6 +3,7 @@ package handlers
 import (
 	"dev-vendor/product-service/internal/products/application/services"
 	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/metrics"
 	"dev-vendor/product-service/internal/shared/tracer"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -55,6 +56,7 @@ func (h *ProductHandler) PutProductBySlugHandler(c *gin.Context) {
 		return
 	}
 
+	metrics.ProductsUpdatedCounter.Inc()
 	c.JSON(http.StatusOK, gin.H{})
 
 }
