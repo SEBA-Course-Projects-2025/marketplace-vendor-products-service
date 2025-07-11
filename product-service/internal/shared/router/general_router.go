@@ -4,6 +4,7 @@ import (
 	_ "dev-vendor/docs"
 	productInterfaces "dev-vendor/product-service/internal/products/interfaces"
 	productsHandlers "dev-vendor/product-service/internal/products/interfaces/handlers"
+	"dev-vendor/product-service/internal/shared/logs"
 	"dev-vendor/product-service/internal/shared/middlewares"
 	stocksInterfaces "dev-vendor/product-service/internal/stocks/interfaces"
 	stockHandlers "dev-vendor/product-service/internal/stocks/interfaces/handlers"
@@ -25,6 +26,8 @@ func SetUpRouter(productHandler *productsHandlers.ProductHandler, stockHandler *
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r := gin.New()
 
 	p := ginprometheus.NewPrometheus("vendor_product_service")
@@ -36,6 +39,8 @@ func SetUpRouter(productHandler *productsHandlers.ProductHandler, stockHandler *
 	}), gin.WrapH(promhttp.Handler()))
 
 	r.Use(otelgin.Middleware("vendor_product_service"))
+
+	r.Use(logs.GinLogger())
 
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
