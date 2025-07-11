@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dev-vendor/product-service/internal/shared/metrics"
 	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/application/services"
 	"errors"
@@ -53,6 +54,7 @@ func (h *StockHandler) DeleteStockByIdHandler(c *gin.Context) {
 		return
 	}
 
+	metrics.StocksDeletedCounter.Inc()
 	c.JSON(http.StatusOK, gin.H{})
 
 }

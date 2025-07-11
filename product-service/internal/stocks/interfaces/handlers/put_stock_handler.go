@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dev-vendor/product-service/internal/shared/metrics"
 	"dev-vendor/product-service/internal/shared/tracer"
 	"dev-vendor/product-service/internal/stocks/application/services"
 	"dev-vendor/product-service/internal/stocks/dtos"
@@ -63,6 +64,7 @@ func (h *StockHandler) PutStockHandler(c *gin.Context) {
 		return
 	}
 
+	metrics.StocksUpdatedCounter.Inc()
 	c.JSON(http.StatusOK, gin.H{})
 
 }
