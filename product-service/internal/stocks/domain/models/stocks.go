@@ -10,6 +10,7 @@ type StocksLocation struct {
 	Id      uuid.UUID `json:"id" gorm:"column:id;type:uuid;primaryKey"`
 	City    string    `json:"city" gorm:"column:city;type:varchar(255);not null"`
 	Address string    `json:"address" gorm:"column:address;type:varchar(255);not null"`
+	Slug    string    `json:"slug" gorm:"column:slug;type:varchar(255);not null"`
 	Stocks  []Stock   `json:"stocks" gorm:"foreignKey:LocationId;references:Id"`
 }
 
