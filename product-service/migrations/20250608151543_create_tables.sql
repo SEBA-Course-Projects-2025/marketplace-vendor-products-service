@@ -1,6 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 create table stocks_locations
 (
     id      uuid         not null
@@ -31,8 +33,8 @@ create table tags
 
 create table products_tags
 (
-    product_id uuid not null references products (id),
-    tag_id     uuid not null references tags (id),
+    product_id uuid not null,
+    tag_id     uuid not null,
     primary key (product_id, tag_id)
 );
 
@@ -40,7 +42,7 @@ create table products_images
 (
     id         uuid not null primary key,
     image_url  text not null,
-    product_id uuid not null references products (id)
+    product_id uuid not null
 );
 
 create table stocks
@@ -50,20 +52,17 @@ create table stocks
         primary key,
     created_at    timestamp default now(),
     updated_at    timestamp default now(),
-    location_id   uuid
-        references stocks_locations
+    location_id   uuid not null
 );
 
 create table stocks_products
 (
-    product_id uuid
-        references products (id),
+    product_id uuid not null,
     unit_cost  numeric(12, 2),
     quantity   integer not null,
     created_at timestamp default now(),
     updated_at timestamp default now(),
-    stock_id   uuid
-        references stocks (id),
+    stock_id   uuid not null,
     primary key (product_id, stock_id)
 );
 
