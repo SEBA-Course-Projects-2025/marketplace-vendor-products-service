@@ -10,21 +10,15 @@ import (
 	stockHandlers "dev-vendor/product-service/internal/stocks/interfaces/handlers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-	"log"
 	"os"
 )
 
 func SetUpRouter(productHandler *productsHandlers.ProductHandler, stockHandler *stockHandlers.StockHandler) *gin.Engine {
-
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
 
 	gin.SetMode(gin.ReleaseMode)
 

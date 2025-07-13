@@ -2,7 +2,6 @@ package amqp
 
 import (
 	"dev-vendor/product-service/internal/shared/utils"
-	"github.com/joho/godotenv"
 	"github.com/streadway/amqp"
 	"os"
 )
@@ -97,10 +96,6 @@ func SetUpDlq(channel *amqp.Channel) error {
 }
 
 func ConnectAMQP() (*AMQPConfig, error) {
-
-	if err := godotenv.Load(); err != nil {
-		return nil, utils.ErrorHandler(err, err.Error())
-	}
 
 	amqpUrl := os.Getenv("AMQP_URL")
 
