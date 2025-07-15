@@ -6,11 +6,18 @@ import (
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/shared/tracer"
+	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func PutProduct(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, id uuid.UUID, productReq dtos.ProductRequest, vendorId uuid.UUID) error {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId":  vendorId,
+		"productId": id,
+	}).Info("Starting PutProduct application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PutProductById")
 	defer span.End()
@@ -52,14 +59,19 @@ func PutProduct(ctx context.Context, repo domain.ProductRepository, eventRepo ev
 		outbox, err := dtos.ProductToOutbox(existingProduct, "product.updated.catalog", "product.catalog.events")
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
+
+		logrus.WithFields(logrus.Fields{
+			"vendorId":  vendorId,
+			"productId": id,
+		}).Info("Successfully fully modified product by id")
 
 		return nil
 	})

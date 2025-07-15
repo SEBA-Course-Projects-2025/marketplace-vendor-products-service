@@ -6,11 +6,17 @@ import (
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/shared/tracer"
+	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func PostProduct(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, productReq dtos.ProductRequest, vendorId uuid.UUID) (dtos.OneProductResponse, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+	}).Info("Starting PostProduct application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PostProduct")
 	defer span.End()
@@ -33,21 +39,25 @@ func PostProduct(ctx context.Context, repo domain.ProductRepository, eventRepo e
 		outbox, err := dtos.ProductToOutbox(product, "product.created.catalog", "product.catalog.events")
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
 		productResponse = dtos.ProductToDto(product)
 
 		return nil
 	}); err != nil {
-		return dtos.OneProductResponse{}, err
+		return dtos.OneProductResponse{}, utils.ErrorHandler(err, err.Error())
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+	}).Info("Successfully created product")
 
 	return productResponse, nil
 

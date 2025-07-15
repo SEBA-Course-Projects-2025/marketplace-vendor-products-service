@@ -6,11 +6,18 @@ import (
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/shared/tracer"
+	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func PatchProductBySlug(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, slug string, productReq dtos.ProductPatchRequest, vendorId uuid.UUID) (dtos.OneProductResponse, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"slug":     slug,
+	}).Info("Starting PatchProductBySlug application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PatchProductBySlug")
 	defer span.End()
@@ -59,21 +66,26 @@ func PatchProductBySlug(ctx context.Context, repo domain.ProductRepository, even
 		outbox, err := dtos.ProductToOutbox(existingProduct, "product.updated.catalog", "product.catalog.events")
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
 		productResponse = dtos.ProductToDto(existingProduct)
 		return nil
 
 	}); err != nil {
-		return dtos.OneProductResponse{}, err
+		return dtos.OneProductResponse{}, utils.ErrorHandler(err, err.Error())
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"slug":     slug,
+	}).Info("Successfully partially modified product by slug")
 
 	return productResponse, nil
 }

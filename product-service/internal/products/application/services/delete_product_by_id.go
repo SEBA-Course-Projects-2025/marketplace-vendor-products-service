@@ -6,11 +6,18 @@ import (
 	"dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/dtos"
 	"dev-vendor/product-service/internal/shared/tracer"
+	"dev-vendor/product-service/internal/shared/utils"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func DeleteProductById(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, id uuid.UUID, vendorId uuid.UUID) error {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId":  vendorId,
+		"productId": id,
+	}).Info("Starting DeleteProductById application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "DeleteOneProductById")
 	defer span.End()
@@ -27,15 +34,19 @@ func DeleteProductById(ctx context.Context, repo domain.ProductRepository, event
 		outbox, err := dtos.DeletedProductToOutbox([]uuid.UUID{id}, "product.deleted.catalog", "product.catalog.events")
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 
+		logrus.WithFields(logrus.Fields{
+			"vendorId": vendorId,
+			"id":       id,
+		}).Info("Successfully soft deleted product by id")
 		return nil
 
 	})
