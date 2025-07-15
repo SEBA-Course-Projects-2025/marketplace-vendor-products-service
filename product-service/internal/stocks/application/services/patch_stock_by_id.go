@@ -22,7 +22,7 @@ func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stock
 
 	var stockResponse dtos.OneStockResponse
 
-	err := stockRepo.Transaction(func(txRepo domain.StockRepository) error {
+	if err := stockRepo.Transaction(func(txRepo domain.StockRepository) error {
 		var location *models.StocksLocation
 
 		if stockReq.LocationId != nil && *stockReq.LocationId != uuid.Nil {
@@ -51,9 +51,7 @@ func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stock
 
 		return nil
 
-	})
-
-	if err != nil {
+	}); err != nil {
 		return dtos.OneStockResponse{}, err
 	}
 
