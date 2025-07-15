@@ -10,10 +10,17 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func PutStockProduct(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, stockProductReq dtos.PutStockProductRequest, stockId uuid.UUID, productId uuid.UUID, vendorId uuid.UUID) error {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId":  vendorId,
+		"stockId":   stockId,
+		"productId": productId,
+	}).Info("Starting PutStockProduct application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PutStockProduct")
 	defer span.End()
@@ -52,6 +59,12 @@ func PutStockProduct(ctx context.Context, stockRepo domain.StockRepository, prod
 		if err := services.UpdateProductQuantity(ctx, txProductRepo, txEventRepo, productId, quantitySum, "product.catalog.events"); err != nil {
 			return err
 		}
+
+		logrus.WithFields(logrus.Fields{
+			"vendorId":  vendorId,
+			"stockId":   stockId,
+			"productId": productId,
+		}).Info("Successfully partially modified stock product by its stockId and productId")
 
 		return txStockRepo.UpdateStockProduct(ctx, updatedStockProduct)
 

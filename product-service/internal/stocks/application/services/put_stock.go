@@ -6,9 +6,15 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 func PutStock(ctx context.Context, stockRepo domain.StockRepository, stockReq dtos.PutStockRequest, stockId uuid.UUID, vendorId uuid.UUID) error {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"stockId":  stockId,
+	}).Info("Starting PutStock application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PutStock")
 	defer span.End()
@@ -27,6 +33,11 @@ func PutStock(ctx context.Context, stockRepo domain.StockRepository, stockReq dt
 		}
 
 		existingStock = dtos.UpdateStockWithDto(existingStock, stockReq, location)
+
+		logrus.WithFields(logrus.Fields{
+			"vendorId": vendorId,
+			"stockId":  stockId,
+		}).Info("Successfully fully modified stock by its id")
 
 		return txRepo.UpdateStock(ctx, existingStock)
 	})

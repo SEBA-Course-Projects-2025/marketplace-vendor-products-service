@@ -7,9 +7,15 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stockReq dtos.StockPatchRequest, stockId uuid.UUID, vendorId uuid.UUID) (dtos.OneStockResponse, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"stockId":  stockId,
+	}).Info("Starting PatchStockById application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PatchStockById")
 	defer span.End()
@@ -50,6 +56,11 @@ func PatchStockById(ctx context.Context, stockRepo domain.StockRepository, stock
 	if err != nil {
 		return dtos.OneStockResponse{}, err
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"stockId":  stockId,
+	}).Info("Successfully partially modified stock by id")
 
 	return stockResponse, nil
 

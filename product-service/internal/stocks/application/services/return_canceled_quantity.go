@@ -9,10 +9,13 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func ReturnCanceledQuantity(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, stockEventReq []dtos.CanceledOrderItemDto) error {
+
+	logrus.Info("Starting ReturnCanceledQuantity application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "ReturnCanceledQuantity")
 	defer span.End()
@@ -57,6 +60,8 @@ func ReturnCanceledQuantity(ctx context.Context, stockRepo domain.StockRepositor
 			}
 
 		}
+
+		logrus.Info("Successfully returned cancelled product quantities")
 
 		return nil
 

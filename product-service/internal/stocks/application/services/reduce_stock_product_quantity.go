@@ -7,15 +7,21 @@ import (
 	productDomain "dev-vendor/product-service/internal/products/domain"
 	"dev-vendor/product-service/internal/products/domain/productModels"
 	"dev-vendor/product-service/internal/shared/tracer"
+	"dev-vendor/product-service/internal/shared/utils"
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/domain/models"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func ReduceStockProductQuantity(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, quantityReq dtos.OrderCreatedEventDto) error {
+
+	logrus.WithFields(logrus.Fields{
+		"items": quantityReq.Items,
+	}).Info("Starting ReduceStockProductQuantity application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "ReduceStockProductQuantity")
 	defer span.End()
@@ -105,12 +111,12 @@ func ReduceStockProductQuantity(ctx context.Context, stockRepo domain.StockRepos
 
 				outbox, err := dtos.QuantityStatusToOutbox(resp, "vendor.product.quantity.checked", "vendor.product.events")
 				if err != nil {
-					return err
+					return utils.ErrorHandler(err, err.Error())
 				}
 				err = eventRepo.CreateOutboxRecord(ctx, outbox)
 
 				if err != nil {
-					return err
+					return utils.ErrorHandler(err, err.Error())
 				}
 
 				return fmt.Errorf("not enough stock product quantities to reduce")
@@ -143,13 +149,17 @@ func ReduceStockProductQuantity(ctx context.Context, stockRepo domain.StockRepos
 
 		outbox, err := dtos.QuantityStatusToOutbox(resp, "vendor.product.quantity.checked", "vendor.product.events")
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
 		err = eventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return err
+			return utils.ErrorHandler(err, err.Error())
 		}
+
+		logrus.WithFields(logrus.Fields{
+			"items": quantityReq.Items,
+		}).Info("Successfully reduced stock quantities for the product")
 
 		return nil
 	})

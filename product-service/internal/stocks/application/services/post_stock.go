@@ -9,10 +9,15 @@ import (
 	"dev-vendor/product-service/internal/stocks/domain"
 	"dev-vendor/product-service/internal/stocks/dtos"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRepo productDomain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, stockReq dtos.StockRequest, vendorId uuid.UUID) (dtos.PostStockResponse, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+	}).Info("Starting PostStock application service")
 
 	ctx, span := tracer.Tracer.Start(ctx, "PostStock")
 	defer span.End()
@@ -66,6 +71,10 @@ func PostStock(ctx context.Context, stockRepo domain.StockRepository, productRep
 	}); err != nil {
 		return dtos.PostStockResponse{}, err
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+	}).Info("Successfully created stock")
 
 	return stockResponse, nil
 
