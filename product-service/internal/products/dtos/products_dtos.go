@@ -4,7 +4,9 @@ import (
 	"dev-vendor/product-service/internal/event/domain/models"
 	"dev-vendor/product-service/internal/products/domain/productModels"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
 )
@@ -93,7 +95,47 @@ type ProductRequest struct {
 	Tags        []string `json:"tags"`
 }
 
-func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) productModels.Product {
+func ValidateNewProductReq(productReq ProductRequest) error {
+
+	if productReq.Name == "" {
+		logrus.Error("Product name is missing when creating a new one")
+		return errors.New("product name is missing")
+	}
+
+	if productReq.Description == "" {
+		logrus.Error("Product description is missing when creating a new one")
+		return errors.New("product description is missing")
+	}
+
+	if productReq.Price <= 0 {
+		logrus.Error("Product price is missing or invalid when creating a new one")
+		return errors.New("product price is missing or invalid")
+	}
+
+	if productReq.Category == "" {
+		logrus.Error("Product category is missing when creating a new one")
+		return errors.New("product category is missing")
+	}
+
+	if len(productReq.Images) == 0 {
+		logrus.Error("Product images are missing when creating a new one")
+		return errors.New("product images are missing")
+	}
+
+	if len(productReq.Tags) == 0 {
+		logrus.Error("Product tags are missing when creating a new one")
+		return errors.New("product tags are missing")
+	}
+
+	return nil
+
+}
+
+func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) (productModels.Product, error) {
+
+	if err := ValidateNewProductReq(productReq); err != nil {
+		return productModels.Product{}, err
+	}
 
 	productId := uuid.New()
 
@@ -130,7 +172,7 @@ func PostDtoToProduct(productReq ProductRequest, vendorId uuid.UUID) productMode
 		UpdatedAt:   time.Now(),
 	}
 
-	return product
+	return product, nil
 }
 
 func UpdateProductWithDto(existingProduct *productModels.Product, productReq ProductRequest, tags []productModels.Tag) *productModels.Product {
