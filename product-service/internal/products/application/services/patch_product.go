@@ -79,7 +79,7 @@ func PatchProduct(ctx context.Context, repo domain.ProductRepository, eventRepo 
 		return nil
 
 	}); err != nil {
-		return dtos.OneProductResponse{}, utils.ErrorHandler(err, err.Error())
+		return dtos.OneProductResponse{}, err
 	}
 
 	logrus.WithFields(logrus.Fields{

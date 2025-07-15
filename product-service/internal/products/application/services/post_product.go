@@ -28,7 +28,10 @@ func PostProduct(ctx context.Context, repo domain.ProductRepository, eventRepo e
 		txProductRepo := repo.WithTx(tx)
 		txEventRepo := eventRepo.WithTx(tx)
 
-		newProduct := dtos.PostDtoToProduct(productReq, vendorId)
+		newProduct, err := dtos.PostDtoToProduct(productReq, vendorId)
+		if err != nil {
+			return err
+		}
 
 		product, err := txProductRepo.Create(ctx, &newProduct, vendorId)
 
@@ -52,7 +55,7 @@ func PostProduct(ctx context.Context, repo domain.ProductRepository, eventRepo e
 
 		return nil
 	}); err != nil {
-		return dtos.OneProductResponse{}, utils.ErrorHandler(err, err.Error())
+		return dtos.OneProductResponse{}, err
 	}
 
 	logrus.WithFields(logrus.Fields{
