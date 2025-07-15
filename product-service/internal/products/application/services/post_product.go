@@ -45,7 +45,7 @@ func PostProduct(ctx context.Context, repo domain.ProductRepository, eventRepo e
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return utils.ErrorHandler(err, err.Error())
+			return err
 		}
 
 		productResponse = dtos.ProductToDto(product)

@@ -116,7 +116,7 @@ func ReduceStockProductQuantity(ctx context.Context, stockRepo domain.StockRepos
 				err = eventRepo.CreateOutboxRecord(ctx, outbox)
 
 				if err != nil {
-					return utils.ErrorHandler(err, err.Error())
+					return err
 				}
 
 				return fmt.Errorf("not enough stock product quantities to reduce")
@@ -154,7 +154,7 @@ func ReduceStockProductQuantity(ctx context.Context, stockRepo domain.StockRepos
 		err = eventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return utils.ErrorHandler(err, err.Error())
+			return err
 		}
 
 		logrus.WithFields(logrus.Fields{

@@ -72,7 +72,7 @@ func PatchProduct(ctx context.Context, repo domain.ProductRepository, eventRepo 
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return utils.ErrorHandler(err, err.Error())
+			return err
 		}
 
 		productResponse = dtos.ProductToDto(existingProduct)
@@ -80,7 +80,6 @@ func PatchProduct(ctx context.Context, repo domain.ProductRepository, eventRepo 
 
 	}); err != nil {
 		return dtos.OneProductResponse{}, utils.ErrorHandler(err, err.Error())
-
 	}
 
 	logrus.WithFields(logrus.Fields{

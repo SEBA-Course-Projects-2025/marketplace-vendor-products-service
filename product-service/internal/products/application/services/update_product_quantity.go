@@ -43,7 +43,7 @@ func UpdateProductQuantity(ctx context.Context, repo domain.ProductRepository, e
 	err = eventRepo.CreateOutboxRecord(ctx, outbox)
 
 	if err != nil {
-		return utils.ErrorHandler(err, err.Error())
+		return err
 	}
 
 	logrus.WithFields(logrus.Fields{

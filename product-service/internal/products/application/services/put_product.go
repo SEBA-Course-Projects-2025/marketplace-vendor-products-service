@@ -65,7 +65,7 @@ func PutProduct(ctx context.Context, repo domain.ProductRepository, eventRepo ev
 		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
 
 		if err != nil {
-			return utils.ErrorHandler(err, err.Error())
+			return err
 		}
 
 		logrus.WithFields(logrus.Fields{
