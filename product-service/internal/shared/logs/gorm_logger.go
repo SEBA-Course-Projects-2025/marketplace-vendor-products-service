@@ -74,14 +74,16 @@ func (lgl *LokiGormLogger) Trace(ctx context.Context, begin time.Time, fc func()
 
 	switch {
 	case err != nil && lgl.level >= logger.Error:
+		labels := copyLabelsWithLevel(lgl.labels, "error")
 		select {
-		case logsQueue <- logEntry{"Error executing SQL query:" + sqlMessage, lgl.labels}:
+		case logsQueue <- logEntry{"Error executing SQL query:" + sqlMessage, labels}:
 		default:
 			log.Printf("Logs queue is full, dropping log: %s", fmt.Sprintf("ERROR: "+sqlMessage, lgl.labels))
 		}
 	case lgl.level == logger.Info:
+		labels := copyLabelsWithLevel(lgl.labels, "info")
 		select {
-		case logsQueue <- logEntry{"SQL:" + sqlMessage, lgl.labels}:
+		case logsQueue <- logEntry{"SQL:" + sqlMessage, labels}:
 		default:
 			log.Printf("Logs queue is full, dropping log: %s", fmt.Sprintf("ERROR: "+sqlMessage, lgl.labels))
 		}
