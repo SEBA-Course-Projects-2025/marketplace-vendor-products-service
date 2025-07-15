@@ -9,12 +9,14 @@ import (
 	"dev-vendor/product-service/internal/shared/amqp"
 	"dev-vendor/product-service/internal/shared/db"
 	mainHandler "dev-vendor/product-service/internal/shared/handler"
+	"dev-vendor/product-service/internal/shared/logs"
 	"dev-vendor/product-service/internal/shared/router"
 	"dev-vendor/product-service/internal/shared/tracer"
 	stockRepository "dev-vendor/product-service/internal/stocks/infrastructure/repository"
 	stockHandlers "dev-vendor/product-service/internal/stocks/interfaces/handlers"
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"time"
@@ -37,6 +39,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	logrusLabels := map[string]string{
+		"job": "vendor_product_service_logrus",
+	}
+
+	logrusHook := logs.NewLokiLogrusLogger(logrusLabels)
+
+	logrus.AddHook(logrusHook)
 
 	newTracer := tracer.InitTracer()
 	defer func() {
