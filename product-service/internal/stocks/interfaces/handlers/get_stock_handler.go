@@ -27,14 +27,7 @@ func (h *StockHandler) GetStockHandler(c *gin.Context) {
 
 	ctx, span := tracer.Tracer.Start(c.Request.Context(), "GetStockHandler")
 	defer span.End()
-
-	v, _ := c.Get("vendorId")
-	vendorId, ok := v.(uuid.UUID)
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vendorId"})
-		return
-	}
-
+	
 	idStr := c.Param("stockId")
 
 	id, err := uuid.Parse(idStr)
@@ -44,7 +37,7 @@ func (h *StockHandler) GetStockHandler(c *gin.Context) {
 		return
 	}
 
-	stock, err := services.GetStockById(ctx, h.StockRepo, id, vendorId)
+	stock, err := services.GetStockById(ctx, h.StockRepo, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Stock not found"})

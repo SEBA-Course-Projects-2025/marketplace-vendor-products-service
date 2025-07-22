@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func GetStockById(ctx context.Context, repo domain.StockRepository, id uuid.UUID, vendorID uuid.UUID) (dtos.OneStockResponse, error) {
+func GetStockById(ctx context.Context, repo domain.StockRepository, id uuid.UUID) (dtos.OneStockResponse, error) {
 
 	logrus.WithFields(logrus.Fields{
 		"stockId": id,

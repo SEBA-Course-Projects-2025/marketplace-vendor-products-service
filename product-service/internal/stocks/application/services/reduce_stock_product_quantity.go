@@ -84,14 +84,8 @@ func ReduceStockProductQuantity(ctx context.Context, stockRepo domain.StockRepos
 
 				existingStockProduct.Quantity -= toReduce
 
-				if existingStockProduct.Quantity == 0 {
-					if err := txStockRepo.DeleteStockProductById(ctx, existingStockProduct.StockId, existingStockProduct.ProductId, checkProduct.VendorId); err != nil {
-						return err
-					}
-				} else {
-					if _, err = txStockRepo.PatchStockProductId(ctx, existingStockProduct); err != nil {
-						return err
-					}
+				if _, err = txStockRepo.PatchStockProductId(ctx, existingStockProduct); err != nil {
+					return err
 				}
 
 				remainToReduce -= toReduce
