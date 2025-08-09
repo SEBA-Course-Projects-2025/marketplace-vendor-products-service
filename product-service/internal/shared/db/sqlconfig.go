@@ -1,0 +1,42 @@
+package db
+
+import (
+	"dev-vendor/product-service/internal/shared/logs"
+	"dev-vendor/product-service/internal/shared/utils"
+	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"os"
+)
+
+func ConnectDb() (*gorm.DB, error) {
+
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	port := os.Getenv("DB_PORT")
+	host := os.Getenv("DB_HOST")
+
+	dataSourceName := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require", host, user, password, dbname, port)
+
+	labels := map[string]string{
+		"job": "vendor_product_service_gorm",
+	}
+
+	lokiLogger := logs.NewLokiGormLogger(
+		labels,
+		logger.Info,
+	)
+
+	db, err := gorm.Open(postgres.Open(dataSourceName), &gorm.Config{
+		Logger: lokiLogger,
+	})
+
+	if err != nil {
+		return nil, utils.ErrorHandler(err, err.Error())
+	}
+
+	return db, nil
+
+}

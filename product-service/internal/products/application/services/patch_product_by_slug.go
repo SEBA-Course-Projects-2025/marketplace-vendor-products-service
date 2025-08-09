@@ -1,0 +1,91 @@
+package services
+
+import (
+	"context"
+	eventDomain "dev-vendor/product-service/internal/event/domain"
+	"dev-vendor/product-service/internal/products/domain"
+	"dev-vendor/product-service/internal/products/dtos"
+	"dev-vendor/product-service/internal/shared/tracer"
+	"dev-vendor/product-service/internal/shared/utils"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
+)
+
+func PatchProductBySlug(ctx context.Context, repo domain.ProductRepository, eventRepo eventDomain.EventRepository, db *gorm.DB, slug string, productReq dtos.ProductPatchRequest, vendorId uuid.UUID) (dtos.OneProductResponse, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"slug":     slug,
+	}).Info("Starting PatchProductBySlug application service")
+
+	ctx, span := tracer.Tracer.Start(ctx, "PatchProductBySlug")
+	defer span.End()
+
+	var productResponse dtos.OneProductResponse
+
+	if err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		txProductRepo := repo.WithTx(tx)
+		txEventRepo := eventRepo.WithTx(tx)
+
+		existingProduct, err := txProductRepo.FindBySlug(ctx, slug, vendorId)
+
+		if err != nil {
+			return err
+		}
+
+		if productReq.Images != nil {
+			if err := txProductRepo.DeleteProductImages(ctx, existingProduct); err != nil {
+				return err
+			}
+		}
+
+		if productReq.Tags != nil {
+			if err := txProductRepo.DeleteProductTags(ctx, existingProduct); err != nil {
+				return err
+			}
+		}
+
+		tags, err := txProductRepo.FindAllTags(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		existingProduct = dtos.PatchDtoToProduct(existingProduct, productReq, tags)
+
+		existingProduct.VendorId = vendorId
+
+		existingProduct, err = txProductRepo.Patch(ctx, existingProduct)
+
+		if err != nil {
+			return err
+		}
+
+		outbox, err := dtos.ProductToOutbox(existingProduct, "product.updated.catalog", "product.catalog.events")
+
+		if err != nil {
+			return utils.ErrorHandler(err, err.Error())
+		}
+
+		err = txEventRepo.CreateOutboxRecord(ctx, outbox)
+
+		if err != nil {
+			return err
+		}
+
+		productResponse = dtos.ProductToDto(existingProduct)
+		return nil
+
+	}); err != nil {
+		return dtos.OneProductResponse{}, err
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"vendorId": vendorId,
+		"slug":     slug,
+	}).Info("Successfully partially modified product by slug")
+
+	return productResponse, nil
+}
